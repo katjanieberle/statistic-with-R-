@@ -13,7 +13,7 @@
 
 <meta name="date" content="2026-03-15" />
 
-<title>R - Programmiergrundlagen</title>
+<title>R - Data Frames &amp; Data Import/Export</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,326 +350,316 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">R - Programmiergrundlagen</h1>
+<h1 class="title toc-ignore">R - Data Frames &amp; Data
+Import/Export</h1>
 <h4 class="author">Dr. Katja Nieberle</h4>
 <h4 class="date">2026-03-15</h4>
 
 </div>
 
 
-<div id="arbeitsverzeichnis-working-directory" class="section level2">
-<h2>Arbeitsverzeichnis (Working Directory)</h2>
-<p>Das <strong>Working Directory</strong> ist der Ordner, in dem R nach
-Dateien sucht und speichert.Man sieht die auch direkt im RStudio in der
-Files “Ecke” (typischerweise rechts unten).</p>
-<pre class="r"><code># Aktuelles Working Directory anzeigen
-getwd()
+<div id="data-frames" class="section level2">
+<h2>Data Frames</h2>
+<p><strong>Data Frame:</strong> Flexible Tabellenstruktur mit Spalten
+von unterschiedliche Typen: numeric, character, boolean Die Data Frames
+werden häufig in der Datenanalyse verwendet. Die meisten
+datenanalytische Funktionen erwarten/nutzen Data Frames als
+Eingabeparameter.</p>
+<p>Zum Vergleich enthält eine <strong>Matrix</strong> alle Elemente vom
+gleichen Datentyp (bspw. nur numeric oder nur character).</p>
+<pre class="r"><code>chocolate &lt;- data.frame(
+  brand = c(&quot;Lindt&quot;, &quot;Milka&quot;, &quot;Toblerone&quot;, &quot;Ferrero Rocher&quot;, &quot;Ritter Sport&quot;,
+            &quot;Lindt&quot;, &quot;Milka&quot;, &quot;KitKat&quot;, &quot;Snickers&quot;, &quot;Milky Way&quot;),
+  type = c(&quot;Dark 70%&quot;, &quot;Milk Almond&quot;, &quot;White Triangle&quot;, &quot;Hazelnut&quot;, &quot;Marzipan&quot;,
+           &quot;Excellence 85%&quot;, &quot;Oreo&quot;, &quot;Chunky&quot;, &quot;Peanut&quot;, &quot;Caramel&quot;),
+  weight = c(100, 200, 360, 200, 100, 50, 120, 40, 50, 55), 
+  price = c(&quot;2.99&quot;, &quot;1.49&quot;, &quot;5.99&quot;, &quot;4.49&quot;, &quot;1.19&quot;, &quot;1.79&quot;, &quot;1.29&quot;, &quot;0.79&quot;, &quot;0.89&quot;, &quot;0.99&quot;),
+  use_by = c(&quot;2026-03-19&quot;,&quot;2026-11-07&quot;,&quot;2026-01-12&quot;,&quot;2026-05-17&quot;,&quot;2026-06-16&quot;,
+           &quot;2026-01-14&quot;,&quot;2026-08-03&quot;,&quot;2026-09-15&quot;,&quot;2026-04-12&quot;,&quot;2026-09-11&quot;),
+  stringsAsFactors = FALSE
+)</code></pre>
+</div>
+<div id="manipulationen-mit-data-frames" class="section level2">
+<h2>Manipulationen mit data frames</h2>
+<div id="data-frame-analysieren" class="section level3">
+<h3>Data Frame analysieren:</h3>
+<pre class="r"><code>View(chocolate)       # R-Studio Tabelle - klickbar!
+head(chocolate)       # zeigt die ersten 6 Records</code></pre>
+<pre><code>##            brand           type weight price     use_by
+## 1          Lindt       Dark 70%    100  2.99 2026-03-19
+## 2          Milka    Milk Almond    200  1.49 2026-11-07
+## 3      Toblerone White Triangle    360  5.99 2026-01-12
+## 4 Ferrero Rocher       Hazelnut    200  4.49 2026-05-17
+## 5   Ritter Sport       Marzipan    100  1.19 2026-06-16
+## 6          Lindt Excellence 85%     50  1.79 2026-01-14</code></pre>
+<pre class="r"><code>print(chocolate)      # nicht zu empfehlen bei großen data frames     </code></pre>
+<pre><code>##             brand           type weight price     use_by
+## 1           Lindt       Dark 70%    100  2.99 2026-03-19
+## 2           Milka    Milk Almond    200  1.49 2026-11-07
+## 3       Toblerone White Triangle    360  5.99 2026-01-12
+## 4  Ferrero Rocher       Hazelnut    200  4.49 2026-05-17
+## 5    Ritter Sport       Marzipan    100  1.19 2026-06-16
+## 6           Lindt Excellence 85%     50  1.79 2026-01-14
+## 7           Milka           Oreo    120  1.29 2026-08-03
+## 8          KitKat         Chunky     40  0.79 2026-09-15
+## 9        Snickers         Peanut     50  0.89 2026-04-12
+## 10      Milky Way        Caramel     55  0.99 2026-09-11</code></pre>
+<pre class="r"><code>dim(chocolate)        # Dimensionen des Datensatzes [Zeilenanzahl, Spaltenanzahl]</code></pre>
+<pre><code>## [1] 10  5</code></pre>
+<pre class="r"><code>str(chocolate)        # Struktur des data frames</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10 obs. of  5 variables:
+##  $ brand : chr  &quot;Lindt&quot; &quot;Milka&quot; &quot;Toblerone&quot; &quot;Ferrero Rocher&quot; ...
+##  $ type  : chr  &quot;Dark 70%&quot; &quot;Milk Almond&quot; &quot;White Triangle&quot; &quot;Hazelnut&quot; ...
+##  $ weight: num  100 200 360 200 100 50 120 40 50 55
+##  $ price : chr  &quot;2.99&quot; &quot;1.49&quot; &quot;5.99&quot; &quot;4.49&quot; ...
+##  $ use_by: chr  &quot;2026-03-19&quot; &quot;2026-11-07&quot; &quot;2026-01-12&quot; &quot;2026-05-17&quot; ...</code></pre>
+</div>
+<div id="data-frame-indizieren" class="section level3">
+<h3>Data Frame indizieren:</h3>
+<pre class="r"><code>chocolate$price       # eine einzelne Spalte ausgeben mit $
+chocolate[,3]         # die 3.te Spalte ausgeben
+chocolate[,&quot;price&quot;]   # die Spalte price ausgeben
 
-# Working Directory ändern
-# setwd(&quot;C:/Users/DeinName/Dokumente/projekt&quot;)</code></pre>
-<p><strong>Tipp:</strong> Bei RStudio-Projekten wird das Working
-Directory automatisch auf den Projektordner gesetzt – besser als
-<code>setwd()</code>!</p>
+chocolate[1,]         # die erste Zeile ausgeben
+
+chocolate[1,&quot;price&quot;]  # das erste Element aus der Spalte price ausgeben
+chocolate[1,3]        </code></pre>
+</div>
+<div id="neue-spalte-erstellen" class="section level3">
+<h3>Neue Spalte erstellen:</h3>
+<pre class="r"><code>chocolate$newcol_1  &lt;- 1:10
+
+chocolate$newcol_2  &lt;- 1
+
+head(chocolate)</code></pre>
+<pre><code>##            brand           type weight price     use_by newcol_1 newcol_2
+## 1          Lindt       Dark 70%    100  2.99 2026-03-19        1        1
+## 2          Milka    Milk Almond    200  1.49 2026-11-07        2        1
+## 3      Toblerone White Triangle    360  5.99 2026-01-12        3        1
+## 4 Ferrero Rocher       Hazelnut    200  4.49 2026-05-17        4        1
+## 5   Ritter Sport       Marzipan    100  1.19 2026-06-16        5        1
+## 6          Lindt Excellence 85%     50  1.79 2026-01-14        6        1</code></pre>
 <hr />
 </div>
-<div id="r-als-taschenrechner" class="section level2">
-<h2>R als Taschenrechner</h2>
-<p>R kann matematische Operationen</p>
-<pre class="r"><code>1 + 2 * 3              # 7 (Reihenfolge beachten!)</code></pre>
-<pre><code>## [1] 7</code></pre>
-<pre class="r"><code>sum(1, 2, 3)           # 6</code></pre>
-<pre><code>## [1] 6</code></pre>
-<pre class="r"><code>2 * 5^2 - 10 * 5       # 230</code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code>4 * sin(pi / 2)        # 4</code></pre>
-<pre><code>## [1] 4</code></pre>
-<pre class="r"><code>0 / 0                  # NaN (Not a Number)</code></pre>
-<pre><code>## [1] NaN</code></pre>
-</div>
-<div id="objektzuweisung-und-ausgabe" class="section level2">
-<h2>Objektzuweisung und Ausgabe</h2>
-<p>Verwende immer <code>&lt;-</code> (nicht <code>=</code>):</p>
-<pre class="r"><code>x1 &lt;- 3.25             # Zuweisung
-x2 &lt;- 5.6 - 5
+<div id="datentyp-in-den-spalten-ändern" class="section level3">
+<h3>Datentyp in den Spalten ändern:</h3>
+<p>In den meisten Fällen ist es notwendig, den unformatierten Inputdaten
+vor der Verarbeitung die richtigen Datentypen zuzuweisen. Anderenfalls
+können die Transformationen zu Fehlern führen.</p>
+<ul>
+<li><code>as.numeric()</code></li>
+</ul>
+<pre class="r"><code># sum(chocolate$price) # FEHLER
+chocolate$price_numeric &lt;- as.numeric(chocolate$price)
 
-x1                     # Implizite Ausgabe (letzter Befehl)</code></pre>
-<pre><code>## [1] 3.25</code></pre>
-<pre class="r"><code>print(x1)              # Explizite Ausgabe</code></pre>
-<pre><code>## [1] 3.25</code></pre>
-<pre class="r"><code>print(x1 + x2)         # Berechnung + Ausgabe</code></pre>
-<pre><code>## [1] 3.85</code></pre>
-<hr />
+# jetzt sind arithmetische Operationen korrekt möglich
+sum(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 21.9</code></pre>
+<ul>
+<li><code>as.Date()</code></li>
+</ul>
+<pre class="r"><code># Umwandlung in Date-Objekte (ISO-Format: Jahr-Monat-Tag)
+chocolate$use_by_date &lt;- as.Date(chocolate$use_by, format = &quot;%Y-%m-%d&quot;)
+chocolate$new_date &lt;- chocolate$use_by_date + 7 # Eine Woche danach</code></pre>
+<ul>
+<li><code>as.factor()</code></li>
+</ul>
+<p>Ein <code>factor</code> in R repräsentiert eine kategorische
+Variable, also Ausprägungen wie „männlich/weiblich“, „rot/gelb/grün“
+oder „Produkt A/B/C“. Intern werden dafür Zahlen gespeichert (1, 2, 3,
+…), nach außen sieht man die Labels („A“, „B“, „C“). Faktoren sind
+wichtig für Statistik und Modelle (z.B. lm, aov), damit R weiß, dass
+eine Variable Kategorien und keine metrischen Zahlen darstellt.</p>
+<pre class="r"><code>chocolate$brand_factor &lt;- as.factor(chocolate$brand)
+levels(chocolate$brand_factor)  # zeigt die Faktorstufen</code></pre>
+<pre><code>## [1] &quot;Ferrero Rocher&quot; &quot;KitKat&quot;         &quot;Lindt&quot;          &quot;Milka&quot;         
+## [5] &quot;Milky Way&quot;      &quot;Ritter Sport&quot;   &quot;Snickers&quot;       &quot;Toblerone&quot;</code></pre>
+<pre class="r"><code>table(chocolate$brand_factor)</code></pre>
+<pre><code>## 
+## Ferrero Rocher         KitKat          Lindt          Milka      Milky Way 
+##              1              1              2              2              1 
+##   Ritter Sport       Snickers      Toblerone 
+##              1              1              1</code></pre>
+<p>–</p>
 </div>
-<div id="objekte-klassen-und-datentypen" class="section level2">
-<h2>Objekte, Klassen und Datentypen</h2>
-<pre class="r"><code>a &lt;- 5; mode(a)        # numeric</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code>b &lt;- &quot;Text&quot;; mode(b)   # character</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>c &lt;- TRUE; mode(c)     # logical</code></pre>
-<pre><code>## [1] &quot;logical&quot;</code></pre>
-<pre class="r"><code># Spezialwerte
-d &lt;- NA                # Not Available
-e &lt;- NULL              # Leeres Objekt
+<div id="statistische-zusammenfassung-von-einem-data-frame" class="section level3">
+<h3>Statistische Zusammenfassung von einem Data Frame:</h3>
+<pre class="r"><code>summary(chocolate)    # Zusammenfassung deskriptiver statistische Kennzahlen</code></pre>
+<pre><code>##     brand               type               weight          price          
+##  Length:10          Length:10          Min.   : 40.00   Length:10         
+##  Class :character   Class :character   1st Qu.: 51.25   Class :character  
+##  Mode  :character   Mode  :character   Median :100.00   Mode  :character  
+##                                        Mean   :127.50                     
+##                                        3rd Qu.:180.00                     
+##                                        Max.   :360.00                     
+##                                                                           
+##     use_by             newcol_1        newcol_2 price_numeric 
+##  Length:10          Min.   : 1.00   Min.   :1   Min.   :0.79  
+##  Class :character   1st Qu.: 3.25   1st Qu.:1   1st Qu.:1.04  
+##  Mode  :character   Median : 5.50   Median :1   Median :1.39  
+##                     Mean   : 5.50   Mean   :1   Mean   :2.19  
+##                     3rd Qu.: 7.75   3rd Qu.:1   3rd Qu.:2.69  
+##                     Max.   :10.00   Max.   :1   Max.   :5.99  
+##                                                               
+##   use_by_date            new_date                  brand_factor
+##  Min.   :2026-01-12   Min.   :2026-01-19   Lindt         :2    
+##  1st Qu.:2026-03-25   1st Qu.:2026-04-01   Milka         :2    
+##  Median :2026-06-01   Median :2026-06-08   Ferrero Rocher:1    
+##  Mean   :2026-06-03   Mean   :2026-06-10   KitKat        :1    
+##  3rd Qu.:2026-09-01   3rd Qu.:2026-09-08   Milky Way     :1    
+##  Max.   :2026-11-07   Max.   :2026-11-14   Ritter Sport  :1    
+##                                            (Other)       :2</code></pre>
+<pre class="r"><code>mean(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 2.19</code></pre>
+<pre class="r"><code>median(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 1.39</code></pre>
+<pre class="r"><code>quantile(chocolate$price_numeric, 0.5) # auch median</code></pre>
+<pre><code>##  50% 
+## 1.39</code></pre>
+<pre class="r"><code>min(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 0.79</code></pre>
+<pre class="r"><code>max(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 5.99</code></pre>
+<pre class="r"><code>sd(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 1.761313</code></pre>
+<pre class="r"><code>var(chocolate$price_numeric)</code></pre>
+<pre><code>## [1] 3.102222</code></pre>
+</div>
+<div id="data-frame-manipulationen" class="section level3">
+<h3>Data Frame Manipulationen:</h3>
+<pre class="r"><code>subset(chocolate, price_numeric &gt; 2, select = c(&quot;brand&quot;,&quot;price_numeric&quot;))</code></pre>
+<pre><code>##            brand price_numeric
+## 1          Lindt          2.99
+## 3      Toblerone          5.99
+## 4 Ferrero Rocher          4.49</code></pre>
+<pre class="r"><code>chocolate_subset = subset(chocolate, select = c(&quot;price_numeric&quot;, &quot;weight&quot;))
 
-# Vektor
-avec &lt;- c(1, 2, 3, 4, 5); mode(avec)  # numeric</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code>avec</code></pre>
-<pre><code>## [1] 1 2 3 4 5</code></pre>
-<pre class="r"><code># Matrix
-X &lt;- matrix(1:6, nrow = 2)
-mode(X)                # matrix</code></pre>
-<pre><code>## [1] &quot;numeric&quot;</code></pre>
-<pre class="r"><code>X</code></pre>
-<pre><code>##      [,1] [,2] [,3]
-## [1,]    1    3    5
-## [2,]    2    4    6</code></pre>
+colMeans(chocolate_subset)</code></pre>
+<pre><code>## price_numeric        weight 
+##          2.19        127.50</code></pre>
+<pre class="r"><code>colSums(chocolate_subset)</code></pre>
+<pre><code>## price_numeric        weight 
+##          21.9        1275.0</code></pre>
 </div>
-<div id="prüfung" class="section level2">
-<h2>Prüfung</h2>
-<pre class="r"><code>is.numeric(a)          # TRUE</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>is.na(d)               # TRUE</code></pre>
-<pre><code>## [1] TRUE</code></pre>
 </div>
-<div id="arbeiten-mit-nas" class="section level2">
-<h2>Arbeiten mit NAs</h2>
-<pre class="r"><code>x &lt;- c(2, NA, 4)
-is.na(x)               # TRUE/NA/...</code></pre>
-<pre><code>## [1] FALSE  TRUE FALSE</code></pre>
-<pre class="r"><code>sum(is.na(x))          # 1 NA-Wert</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>mean(x, na.rm = TRUE)  # Ignoriere NA</code></pre>
-<pre><code>## [1] 3</code></pre>
-<pre class="r"><code># na.omit(df)          # Für Data Frames</code></pre>
+<div id="übungsaufgaben" class="section level2">
+<h2>Übungsaufgaben:</h2>
+<p>Erstelle einen Data Frame <code>products</code> mit den Spalten
+<code>id</code> (numeric), <code>name</code> (character),
+<code>price</code> (numeric), <code>store</code> (numeric) mit jeweils 5
+Beobachtungen.</p>
+<ol style="list-style-type: decimal">
+<li><p>Zeige die Struktur und die ersten Zeilen</p></li>
+<li><p>Gib nur die Spalte <code>price</code> aus</p></li>
+<li><p>Gib nur die Produkte mit <code>store &gt; 10</code> aus</p></li>
+<li><p>Erstelle eine neue Spalte <code>products$sale</code>, die sich
+als <code>price*store</code> berechnen lässt</p></li>
+<li><p>Erstelle eine neue Spalte <code>products$price_new</code>, die
+eine Preiserhöhung um 5% wiederspiegelt.</p></li>
+<li><p>Erstelle eine Zusammenfassung statistischer Kennzahlen als
+<code>summary()</code> und interpretiere die Kennzahlen</p></li>
+</ol>
 </div>
-<div id="indizierung-in-vektoren" class="section level2">
-<h2>Indizierung in Vektoren</h2>
-<pre class="r"><code>x &lt;- c(3, 6, 9, 8, 4, 1, 2)
-
-x[c(1, 3)]             # 1. und 3. Element: 3, 9</code></pre>
-<pre><code>## [1] 3 9</code></pre>
-<pre class="r"><code>x[x &lt; 4]               # Logischer Filter</code></pre>
-<pre><code>## [1] 3 1 2</code></pre>
-<pre class="r"><code>length(x)              # 7</code></pre>
-<pre><code>## [1] 7</code></pre>
-<pre class="r"><code>sum(x &lt; 4)             </code></pre>
-<pre><code>## [1] 3</code></pre>
-<pre class="r"><code>which(x &lt; 4)           # Positionen: 1, 6, 7</code></pre>
-<pre><code>## [1] 1 6 7</code></pre>
-</div>
-<div id="matrizen-und-dataframes" class="section level2">
-<h2>Matrizen und Dataframes</h2>
-<pre class="r"><code>Einkaufen &lt;- data.frame(
-  Produkt = c(&quot;Apfelsaft&quot;, &quot;Quark&quot;),
-  Menge   = c(4, 2)
+<div id="lösungsvorschlag" class="section level2">
+<h2>Lösungsvorschlag:</h2>
+<pre class="r"><code>products &lt;- data.frame(
+  id     = c(1, 2, 3, 4, 5),
+  name   = c(&quot;Tee&quot;, &quot;Kaffee&quot;, &quot;Milch&quot;, &quot;Saft&quot;, &quot;Wasser&quot;),
+  price  = c(2.5, 4.0, 1.2, 3.1, 0.8),
+  store  = c(10, 5, 20, 8, 50),
+  stringsAsFactors = FALSE
 )
 
-str(Einkaufen)         # Struktur</code></pre>
-<pre><code>## &#39;data.frame&#39;:    2 obs. of  2 variables:
-##  $ Produkt: chr  &quot;Apfelsaft&quot; &quot;Quark&quot;
-##  $ Menge  : num  4 2</code></pre>
-<pre class="r"><code>Einkaufen[, &quot;Menge&quot;]   # Spalte Menge</code></pre>
-<pre><code>## [1] 4 2</code></pre>
-<pre class="r"><code>Einkaufen[Einkaufen$Menge &gt; 2, ]  # Filter</code></pre>
-<pre><code>##     Produkt Menge
-## 1 Apfelsaft     4</code></pre>
-<hr />
-</div>
-<div id="funktionen-in-r" class="section level2">
-<h2>Funktionen in R</h2>
-<p><strong>Syntax:</strong>
-<code>funktion(arg1 = wert1, arg2 = wert2)</code></p>
-<p><strong>Beispiele: <code>print()</code>, <code>mean()</code>
-</strong></p>
-<pre class="r"><code>a &lt;- 7
-print(a)               # print(7)</code></pre>
-<pre><code>## [1] 7</code></pre>
-<pre class="r"><code>mean(c(1, 2, 3))       # 2</code></pre>
-<pre><code>## [1] 2</code></pre>
-<pre class="r"><code>mean(c(1, NA, 3), na.rm = TRUE)  # 2</code></pre>
-<pre><code>## [1] 2</code></pre>
-<p><strong>Argumente haben oft Default Eingaben:</strong> (z.B. na.rm =
-FALSE).</p>
-<p><strong>R-Hilfe:</strong> <code>?</code> und <code>??</code></p>
-<pre class="r"><code>?mean                  # Hilfe zu mean()
-??durchschnitt         # Suche über alle Pakete
-help(mean)             # Alternative zu ?
-help.search(&quot;mean&quot;)    # Apropos-Suche</code></pre>
-<p><strong>In RStudio:</strong></p>
-<ul>
-<li><p><code>?mean</code> - Help-Pane öffnet sich</p></li>
-<li><p><code>Strg + Shift + Space</code> Argument-Hilfe</p></li>
-<li><p><code>F1</code> Hilfe zu markiertem Code</p></li>
-</ul>
-<p><strong>R Pakete:</strong> Pakete erweitern R um Funktionen und
-Daten:</p>
-<ul>
-<li><p>Installieren (einmalig):
-<code>install.packages(&quot;openxlsx&quot;)</code></p></li>
-<li><p>Laden (pro Session): <code>library(openxlsx)</code> oder
-<code>require(openxlsx)</code></p></li>
-</ul>
-<hr />
-</div>
-<div id="bedingungen-if-else-ifelse" class="section level2">
-<h2>Bedingungen <code>if</code>, <code>else</code>,
-<code>ifelse</code></h2>
-<pre class="r"><code># Einzelbedingung
-x &lt;- 7
-if (x &gt; 5) {
-  print(&quot;x ist groß&quot;)
-} else {
-  print(&quot;x ist klein&quot;)
-}</code></pre>
-<pre><code>## [1] &quot;x ist groß&quot;</code></pre>
-<pre class="r"><code># Vektorwertig (wichtig!)
-score &lt;- c(85, 92, 78, 95)
-ifelse(score &gt; 90, &quot;Sehr gut&quot;, &quot;Gut&quot;)</code></pre>
-<pre><code>## [1] &quot;Gut&quot;      &quot;Sehr gut&quot; &quot;Gut&quot;      &quot;Sehr gut&quot;</code></pre>
-</div>
-<div id="schleifen-for-while-repeat" class="section level2">
-<h2>Schleifen: <code>for</code>, <code>while</code>,
-<code>repeat</code></h2>
-<pre class="r"><code># for: bekannte Anzahl
-umsatz &lt;- c(100, 150, 200)
-for (i in umsatz) {
-  print(paste(&quot;Umsatz:&quot;, i))
-}</code></pre>
-<pre><code>## [1] &quot;Umsatz: 100&quot;
-## [1] &quot;Umsatz: 150&quot;
-## [1] &quot;Umsatz: 200&quot;</code></pre>
-<pre class="r"><code># while: unbekannte Anzahl
-i &lt;- 1
-while (i &lt;= 3) {
-  print(i)
-  i &lt;- i + 1  # WICHTIG!
-}</code></pre>
-<pre><code>## [1] 1
-## [1] 2
-## [1] 3</code></pre>
-<pre class="r"><code># repeat mit break
-i &lt;- 0
-repeat {
-  i &lt;- i + 1
-  if (i &gt; 3) break
-  print(i)
-}</code></pre>
-<pre><code>## [1] 1
-## [1] 2
-## [1] 3</code></pre>
-<hr />
-</div>
-<div id="workspace-management---verwalte-deine-objekte" class="section level2">
-<h2>Workspace-Management - Verwalte deine Objekte</h2>
-<pre class="r"><code>ls() # Alle Objekte der entsprechenden directory auflisten
-rm(blabla) # Objekt löschen
-getwd() # get working directory - Arbeitsverzeichnis
-setwd(&quot;C:/data&quot;) # set working directory - Setze das Arbeitsverzeichnis</code></pre>
-<hr />
-</div>
-<div id="übungsaufgaben" class="section level1">
-<h1>Übungsaufgaben:</h1>
-<ol style="list-style-type: decimal">
-<li><p>Berechne <code>(3 + 5) * 2 - 4</code>. Weise das Ergebnis der
-Variable <code>result</code> zu. Gebe es mit <code>print()</code> und
-implizit aus. Erweitere um Variable <code>f &lt;- 1.1</code> und
-multipliziere mit dem <code>result</code>.</p></li>
-<li><p>Erstelle Vektor
-<code>sale &lt;- c(10, NA, 15, 20, 30, 40, NA, 90)</code>. Prüfe
-<code>mode(sale)</code>, und <code>is.na(sale)</code>. Berechne
-<code>mean(sale, na.rm=TRUE)</code>. Was für Berechnungen hast Du genau
-durchgeführt?</p></li>
-<li><p>Erstelle den Vektor
-<code>price &lt;- c(2.5, 1.8, 3.2, 0.9, 4.1, 8.7, 9.1)</code>.</p></li>
-</ol>
-<ul>
-<li>Extrahiere 2. und 4. Element.</li>
-<li>Filtere <code>price &gt; 2</code>.</li>
-<li>Berechne die Summe der Elemente mit <code>sum()</code>.</li>
-<li>Berechne die Summe der Elemente &gt; 2.</li>
-</ul>
-<ol start="4" style="list-style-type: decimal">
-<li><p>Installiere <code>dplyr</code> (falls nicht vorhanden). Lade mit
-<code>library(dplyr)</code> und <code>require(dplyr)</code>.</p></li>
-<li><p>Erstelle Funktion <code>calculation(sales, rate=0.19)</code>. Die
-Funktion berechnen die Umsatzsteuer als <code>sales * (1+rate)</code>.
-Teste mit <code>calculation(1000)</code> und mit
-<code>calculation(1000, 0.2)</code>.</p></li>
-<li><p>Für einen sortierten Vektor
-<code>sales &lt;- c(100,150,170,190,250)</code></p></li>
-</ol>
-<ul>
-<li>schreibe eine for-Schleife, um jeden Umsatz aus <code>sales</code>
-zu verdoppeln und zu printen.</li>
-<li>schreibe eine while-Schleife, die den Umsatz solange verdoppelt und
-printen, solange die Werte &lt; 200 sind.</li>
-<li>schreibe eine for-Schleife und entscheide innerhalb der Schleife mit
-einer <code>ìf-than-else</code> Bedingung: Die Werte &gt; 200 sollen
-einzeln geprintet werden; die Werte &lt;= 200 sollen doppelt geprintet
-werden.</li>
-</ul>
-</div>
-<div id="lösungen" class="section level1">
-<h1>Lösungen:</h1>
-<div id="section" class="section level2">
-<h2>1.</h2>
-<pre class="r"><code>result &lt;- (3 + 5) * 2 - 4 # 14
-print(result) # 14
-result # 14 (implizit)
+str(products)  # 1
+head(products)
 
-f &lt;- 1.1
-result * f # 15.4</code></pre>
-</div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
-<pre class="r"><code>sale &lt;- c(10, NA, 15, 20, 30, 40, NA, 90)
-mode(sale) # numeric
-is.na(sale)
-mean(sale, na.rm=TRUE)</code></pre>
-</div>
-<div id="section-2" class="section level2">
-<h2>3.</h2>
-<pre class="r"><code>price &lt;- c(2.5, 1.8, 3.2, 0.9, 4.1, 8.7, 9.1)
-price[c(2,4)]
-price[price &gt; 2]
-sum(price &gt; 2)</code></pre>
-</div>
-<div id="section-3" class="section level2">
-<h2>4.</h2>
-<pre class="r"><code>install.packages(&quot;dplyr&quot;) # Falls nötig
-library(dplyr) # Kein Return
-require(dplyr) # TRUE</code></pre>
-</div>
-<div id="section-4" class="section level2">
-<h2>5.</h2>
-<pre class="r"><code>calculation &lt;- function(sales, rate=0.19) {
-result &lt;- sales * (1 + rate)
-return(result)
-}
-calculation(1000)
-calculation(1000, 0.2)</code></pre>
-</div>
-<div id="section-5" class="section level2">
-<h2>6.</h2>
-<pre class="r"><code>sales &lt;- c(100,150,170,190,250,300)
-for(i in sales) {
-print(i * 2)
-}
+products$price  # 2
 
-i &lt;- 1 # Startwert (erster sales-Wert)
-while(sales[i] &lt; 200) {
-print(sales[i] * 2)
-i = i + 1
-}
+subset(products, store &gt; 10) # 3
 
-for(i in sales) {
-if (i &gt; 200)
-print(i)
-else print (i*2)
-}</code></pre>
+products$sale = products$price * products$store # 4
+
+products$price_new = products$price * 1.05 # 5
+
+summary(products) # 6</code></pre>
+<hr />
 </div>
+<div id="datenformate-rdata-format" class="section level2">
+<h2>Datenformate: RData-Format</h2>
+<p>RData (.RData, .Rda) speichert komplette R-Objekte (Data Frames,
+Modelle, Variablen) mit allen Attributen, Klassen und
+Formatierungen.</p>
+<p><strong>Vorteile vs. CSV:</strong> - Erhält Data Frame-Struktur,
+Faktoren, Labels - Schneller (binär) - Mehrere Objekte gleichzeitig -
+für R-spezifische Analysen optimiert</p>
+<pre class="r"><code># Speichern
+save(iris, mtcars, file = &quot;meine_daten.RData&quot;)
+
+# Laden  
+load(&quot;meine_daten.RData&quot;)  # Objekte iris, mtcars direkt verfügbar!
+ls()  # Zeigt geladene Objekte</code></pre>
+</div>
+<div id="dateneinlesen-dateipfade-paths" class="section level2">
+<h2>Dateneinlesen: Dateipfade/ Paths</h2>
+<ul>
+<li><p><strong>Absoluter Pfad:</strong> Kompletter Pfad:
+<code>C:\\Dokumente\\Benutzer\\Hund\\RProjekt\\daten.csv</code></p></li>
+<li><p><strong>Relativer Pfad:</strong> Bezogen auf aktuelles
+Arbeitsverzeichnis: <code>daten.csv</code></p></li>
+<li><p><strong>Lokaler Pfad:</strong> Pfad auf eigenem Rechner, der bei
+einem anderen Nutzer in der Regel nicht funktionieren wird.</p></li>
+</ul>
+<p><code>data_path = C:\\Dokumente\\Benutzer\\Hund\\RProjekt\\daten.csv</code></p>
+<p>Es empfiehlt sich die Pfade zu parametrisieren, damit der Code
+wiederverwendbar ist:</p>
+</div>
+<div id="backslash-in-pfaden-windows-problem" class="section level2">
+<h2>Backslash in Pfaden (Windows-Problem)</h2>
+<p>Windows verwendet <code>\</code>, R interpretiert als Escape-Zeichen
+(<code>\n</code> = Zeilenumbruch). Lösung: Forward-Slash <code>/</code>
+oder doppelter Backslash <code>\\</code> in den Pfaden zu nutzen.</p>
+<pre class="r"><code># FALSCH → Fehler!
+read.csv(&quot;C:\data\verkauf.csv&quot;)  # \d = Fehler!
+
+# RICHTIG
+read.csv(&quot;C:/data/verkauf.csv&quot;)  # /
+read.csv(&quot;C:\\data\\verkauf.csv&quot;)  # \\
+
+#So prüfst du, ob es einen File im Verzeichnis gibt
+file.exists(&quot;data/verkauf.csv&quot;)  # TRUE/FALSE prüfen</code></pre>
+</div>
+<div id="gängige-datenformate-und-importexport" class="section level2">
+<h2>Gängige Datenformate und Import/Export</h2>
+<p>Verschiedene Formate für unterschiedliche Anwendungen. Für xlsx
+Format benötigt man das zusätzliche Packet <code>openxlsx</code>.</p>
+<pre class="r"><code># CSV (Standard, einfach, groß)
+datacsv &lt;- read.csv(&quot;data\\input\\umsatz.csv&quot;)      # Import
+write.csv(datacsv, &quot;data\\output\\export.csv&quot;, row.names = FALSE)  # Export
+
+# Excel (xlsx braucht Paket openxlsx)
+# install.packages(&quot;openxlsx&quot;)
+library(openxlsx)
+dataxlss &lt;- read.xlsx(&quot;data\\input\\report.xlsx&quot;, sheet = 1)
+write.xlsx(dataxlsx, &quot;data\\output\\report.xlsx&quot;)
+
+# TXT (beliebiges Trennzeichen)
+datatxt &lt;- read.table(&quot;data\\input\\data.txt&quot;, header = TRUE, sep = &quot;\t&quot;)  
+write.table(datatxt, &quot;data\\output\\data.txt&quot;, sep = &quot;\t&quot;, row.names = FALSE)
+
+# Vergleich:
+# CSV: Universell, klein | TXT: Flexibel | RData: R-intern | XLSX: Excel-kompatibel</code></pre>
+</div>
+<div id="dateneinlesen-mit-der-richtigen-formatierung" class="section level2">
+<h2>Dateneinlesen mit der richtigen Formatierung</h2>
+<p><strong>Beispiel:</strong> <code>read.csv</code> - die anderen
+Funktionen analog</p>
+<pre class="r"><code>daten &lt;- read.csv(&quot;data\\input\\verkauf.csv&quot;, 
+                  header = TRUE,      # Erste Zeile = Spaltennamen
+                  sep = &quot;,&quot;,          # Trennzeichen
+                  dec = &quot;.&quot;,          # Dezimaltrennzeichen
+                  na.strings = &quot;NA&quot;,  # NA für fehlende daten
+                  stringsAsFactors = FALSE)  # Text bleibt Text</code></pre>
+<hr />
 </div>
 
 
