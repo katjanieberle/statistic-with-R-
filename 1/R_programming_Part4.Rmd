@@ -1,0 +1,299 @@
+---
+title: "R - Datenvisualisierung"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Grafische Darstellung in R
+
+##  Linienplot plot() mit type="l"
+Zeigt Entwicklung über Zeit (z.B. Umsatz pro Monat).
+
+```{r line}
+# Beispiel-Daten
+months <- 1:12
+sales <- c(100, 100, 110, 140, 150, 200, 200, 210, 210, 250, 240, 280)
+
+# Plot
+plot(x=months, y=sales, type="l", lwd=2, col="blue",
+     xlab="Monat", ylab="Umsatz (in T€)",
+     main="Monatliche Umsatzentwicklung")
+grid()
+```
+
+## Treppenfunktion 
+
+```{r step}
+# Kumulierter Umsatz
+cum_sales <- cumsum(sales)
+plot(months, cum_sales, type="s", lwd=3, col="darkgreen",
+     xlab="Monat", ylab="Kumulierter Umsatz (T€)",
+     main="Kumulative Umsatzentwicklung")
+```
+
+## Histogramm - hist()
+
+```{r hist}
+choc_df <- data.frame(
+  weight = c(100, 200, 360, 200, 100,
+             50, 120, 40, 50, 55,
+             90, 110, 130, 150, 170,
+             190, 210, 230, 250, 300, 500),
+  price  = c(2.99, 1.49, 5.99, 4.49, 1.19,
+             1.79, 1.29, 0.79, 0.89, 0.99,
+             1.59, 1.69, 1.89, 2.19, 2.39,
+             2.59, 2.79, 2.99, 3.49, 3.99, 7.99),
+  brand  = c("Lindt", "Milka", "Toblerone", "Ferrero Rocher", "Ritter Sport",
+             "Lindt", "Milka", "KitKat", "Snickers", "Milky Way",
+             "Lindt", "Milka", "Toblerone", "Ferrero Rocher", "Ritter Sport",
+             "Lindt", "Milka", "KitKat", "Snickers", "Milky Way", "Milka")
+)
+hist(choc_df$weight, breaks=7, col="lightgreen",
+     xlab="Gewichtsgruppen", ylab="Anzahl Produkte",
+     main="",
+     border="black")
+box()
+```
+
+## Barplot
+
+```{r bar}
+brands <- table(choc_df$brand)
+barplot(brands, horiz=FALSE, col="orange",
+        xlab="Anzahl", ylab="Schokoladen-Typen",
+        main="Häufigkeit nach Typ",
+        las=1)  # Labels senkrecht
+box()
+```
+
+## Boxplot
+
+```{r boxplot}
+# Basis-Boxplot
+bp <- boxplot(choc_df$weight,
+              main = "Boxplot von chocolate$weight",
+              ylab = "Gewicht",
+              col  = "lightgray")
+
+# Statistiken aus boxplot.stats holen
+bstats <- boxplot.stats(choc_df$weight)
+stats  <- bstats$stats       # 5er-Statistik: min, Q1, median, Q3, max (ohne Ausreißer)
+out    <- bstats$out         # Ausreißer
+iqr    <- stats[4] - stats[2]
+
+min_val <- stats[1]
+q1      <- stats[2]
+median  <- stats[3]
+q3      <- stats[4]
+max_val <- stats[5]
+mean_val <- mean(choc_df$weight)
+
+lower_fence <- q1 - 1.5 * iqr
+upper_fence <- q3 + 1.5 * iqr
+
+# Beschriftungen hinzufügen
+text(x = 1, y = mean_val,labels ="x")
+text(x = 0.7, y = mean_val,
+     labels = paste0("Mean = ", round(mean_val, 1)),
+     pos = 4, col = "red")
+
+text(x = 1.2, y = median,
+     labels = paste0("Median = ", round(median, 1)),
+     pos = 4, col = "red")
+
+text(x = 1.2, y = q1,
+     labels = paste0("Q1 = ", round(q1, 1)),
+     pos = 4, col = "black")
+
+text(x = 1.2, y = q3,
+     labels = paste0("Q3 = ", round(q3, 1)),
+     pos = 4, col = "black")
+
+text(x = 1.1, y = min_val,
+     labels = paste0("Min (nicht Ausreißer) = ", round(min_val, 1)),
+     pos = 4, col = "black")
+
+text(x = 1.1, y = max_val,
+     labels = paste0("Max (nicht Ausreißer) = ", round(max_val, 1)),
+     pos = 4, col = "black")
+
+text(x = 0.7, y = lower_fence,
+     labels = paste0("Lower fence = ", round(lower_fence, 1)),
+     pos = 4, col = "black")
+
+text(x = 0.7, y = upper_fence,
+     labels = paste0("Upper fence = ", round(upper_fence, 1)),
+     pos = 4, col = "black")
+
+text(x = 0.5, y = q1 + iqr/2,
+     labels = paste0("IQR = ", round(iqr, 1)),
+     pos = 4, col = "black")
+
+# Ausreißer, falls vorhanden
+if (length(out) > 0) {
+  points(rep(1, length(out)), out, pch = 16, col = "red")
+  text(x = 0.9, y = max(out),
+       labels = paste("Ausreißer:", paste(round(out, 1), collapse = ", ")),
+       pos = 2, col = "red")
+}
+
+```
+
+## Scatterplot
+
+```{r scatter}
+plot(choc_df$weight, choc_df$price,
+     pch=16, col="blue", cex=1.5,
+     xlab="Gewicht (g)", ylab="Preis (€)",
+     main="Gewicht vs. Preis Schokoladen")
+grid()
+```
+
+## Kuchendiagramm - pie()
+
+Anteile darstellen - ACHTUNG - verzerrte Wahrnehmung
+
+```{r pie}
+# Marken zählen
+pie(brands,
+    col=rainbow(length(brands)),
+    labels=paste(names(brands), round(100*brands/sum(brands), 1), "%"))
+```
+
+## Dichtefunktion
+
+```{r density}
+
+set.seed(123)  
+bodysize <- rnorm(200, mean = 175, sd = 7)
+
+bodysize_density <- density(bodysize)
+
+hist(bodysize,
+     breaks = 15,
+     freq   = FALSE,              
+     main   = "Histogramm mit Dichtekurve",
+     xlab   = "Körpergröße (cm)",
+     col    = "lightgray",
+     border = "white")
+
+lines(bodysize_density, col = "red", lwd = 2)
+rug(bodysize)  # kleine Striche für einzelne Beobachtungen auf der x-Achse
+box()
+```
+
+## Korrelation Plot
+
+```{r corplot}
+# Pakete
+library(corrplot)
+num_data <- subset(choc_df, select = c(weight, price))
+
+# Korrelationsmatrix berechnen
+cor_mat <- cor(num_data, use = "complete.obs", method = "pearson")
+cor_mat
+
+# Einfache Visualisierung
+corrplot(cor_mat,
+         method = "circle",      # "circle", "square", "number" etc.
+         type   = "upper",       # nur obere Dreiecksmatrix
+         addCoef.col = "black",  # Korrelationswerte einblenden
+         tl.col = "black",       # Textfarbe
+         tl.srt = 45,            # Textrotation
+         diag  = FALSE,
+         title = "Korrelationsmatrix choc_df",
+         mar   = c(0,0,2,0))
+
+# Alternative: nur Zahlen
+corrplot(cor_mat,
+         method = "number",
+         type   = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         title = "Korrelationsmatrix (Zahlen)",
+         mar   = c(0,0,2,0))
+
+```
+
+## Speichern von Grafiken
+
+**Vektorgrafik:**
+
+Eine Vektorgrafik besteht aus Linien, Kurven, Textobjekten und Flächen, beschrieben durch mathematische Gleichungen (z.B. „Linie von (x1,y1) nach (x2,y2) in Blau“), nicht aus Pixeln. 
+
+**Vorteile von Vektorgrafiken:** 
+
+- Beliebig skalierbar ohne Qualitätsverlust; Achsenbeschriftungen und Linien bleiben gestochen scharf (wichtiger Punkt für Plots).
+
+- Kleine Dateien bei vielen simplen Elementen (Linien, Punkte, Text).
+
+- Ideal für Druck, PDFs, wissenschaftliche Artikel, LaTeX (pdf(), postscript()/eps() in R).
+
+**Rastergrafiken (JPEG, PNG):**
+
+Bestehen aus Pixeln; Beim starken Zoomen oder Drucken auf großem Format ergeben sich "Treppenartefakte", unscharfe Schrift.
+
+**Vorteile von Rastergrafiken:** 
+
+- Pixelgenau: Screenshot = Pixelgrafik von Natur aus
+
+- Kopierbar: Rechtsklick --> "Bild speichern" --> fertig
+
+- JPEG/PNG universell lesbar
+
+- Benötigt keine Konvertierung
+
+```{r savepdf, eval = FALSE}
+# PDF in Hochformat: Höhe > Breite
+
+# Passe deinen Pfad an!
+pdf("boxplot_hoch.pdf", width = 7, height = 10)
+boxplot(choc_df$weight,
+        main = "Boxplot chocolate$weight (Hochformat)",
+        ylab = "Gewicht")
+dev.off()
+```
+
+```{r savejpeg, eval = FALSE}
+# JPEG in Querformat: Breite > Höhe
+
+# Passe deinen Pfad an!
+jpeg("scatter_quer.jpg",
+     width = 1600, height = 900, units = "px", quality = 90)
+
+plot(choc_df$weight, choc_df$price,
+     main = "Gewicht vs. Preis (Querformat)",
+     xlab = "Gewicht", ylab = "Preis",
+     pch = 16, col = "blue")
+dev.off()
+```
+
+```{r saveeps, eval = FALSE}
+# EPS als klassisches Vektorformat für Journals/LaTeX
+
+# Passe deinen Pfad an!
+postscript("histogram_quer.eps",
+           width = 10, height = 6, horizontal = FALSE,
+           onefile = FALSE, paper = "special")
+
+hist(choc_df$weight,
+     main = "Histogramm chocolate$weight (EPS, Querformat)",
+     xlab = "Gewicht", col = "lightgray", border = "white")
+dev.off()
+
+```
+
+## Aufgaben
+
+1. Lade die Daten aus gihub XXX und spreichere Sie im `ihr R Projekt > data > input`
+2. Lade die Daten in R Session und schaue die an.
+
+`pathname <- "data\\input\\oktoberfestgesamt19852024.csv"`
+
+`read.csv2(pathname, sep=",")`
+
+3. Erstelle 5 verschiedene Grafiken und speichere diese in einer pdf Datei im Verzeichis `R Projekt > graphics` ab.
+

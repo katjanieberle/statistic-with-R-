@@ -1,0 +1,119 @@
+---
+title: "R - multiple Regression"
+author: "Dr. Katja Nieberle"
+date: "2026-02-01"
+output: html_document
+---
+
+
+---
+
+Wir betrachten einen Datensatz mit den Gebrauchtwagen aus 
+
+<https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho>
+
+
+
+```{r}
+load(file="data//input//cars.Rdata")
+summary(cars)
+```
+
+## Variablen:
+
+- **name**: Marke
+
+- **year**: Baujahr
+
+- **price**: Verkaufspreis in Geldeinheiten
+
+- **km_driven**: Kilometerstand
+
+- **seats**: Anzahl der Sitze
+
+- **fuel_consumption**: Verbrauch km pro Liter
+
+- **displacement**: Hubraum in cm^3
+
+- **max_power**: Maximale Leistung (bhp - brake horsepower: 1 bhp = 0.7457 kW)
+
+- **fuel**: Spritart
+
+- **transmission**: Schaltung
+
+- **owner**: Vorbesitzer
+
+- **seller_type**: verkaufstyp
+
+
+Die Modellierung beginnt mit der **deskriptiven Analyse** der Daten.
+
+- Wertebereiche der Variablen
+
+- Gibt es Lücken in den Daten?
+
+- Muss man Formatierung anpassen?
+
+- Gibt es Ausreißer?
+
+- Welche Zusammenhänge erkennt man durch einfache Analyse in den Daten
+
+## Übungsaufgaben:
+
+1. Erstellt die Zusammenfassung statistischer Kriterien für den Datensatz
+
+- Welche variablen sind numerisch, welche nicht?
+
+- Was ist die abhängige Variable?
+
+2. Erstellt für die numerischen Variablen jeweil ein Boxplot und analysiert den Boxplot bzgl. Ausreißer? 
+
+3. Betrachtet für die nicht numerischen Variablen eine Häufigkeitstabelle und analysiert diese kurz.
+
+4. Erstellt für die numerischen Variablenpaare Korrelationsplots sowie berechnet die empirischen Korrelationskoeffizienten und interpretiert die Zusammenhänge.
+
+5. Fasst die Ergebnisse der Regressionsanalyse zusammen. Welche Datentransformationen sind vor der Modellierung notwendig? 
+
+## Modellschätzung:
+
+Zunächst wird das folgende Regressionsmodell geschätzt:
+
+$$price_i = \beta_0 + \beta_1 \cdot year_i + \beta_2 \cdot km\_driven_i + \beta_3 \cdot fuel\_consumption_i + \beta_4 \cdot max\_power + \beta_5 \cdot displacement + \varepsilon_i$$
+```{r reg1}
+mod <- lm(price ~ year + km_driven + fuel_consumption + max_power + displacement, data = cars)
+sumy <- summary(mod)
+sumy
+```
+
+
+## Übungsaufgaben:
+
+1. Interpretiert den geschätzten Modelloutput
+
+2. Extahiert die einzelnen Modellkoeffizienten aus dem Modelloutput.
+
+3. Extrahiert den Wert des Bestimmtheitsmasses sowie des adjustierten Bestimmtheitsmaßes.
+
+4. Rechnet die deskriptiven Kennzahlen der Residuen im Modelloutput nach (`sumy$residuals`).
+
+---
+
+https://www.kaggle.com/datasets/mirichoi0218/insurance
+
+https://www.kaggle.com/datasets/quantbruce/real-estate-price-prediction
+
+https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho?resource=download
+
+
+
+## Nützliche Videos zum Thema Regressionsanalyse
+
+<https://www.youtube.com/watch?v=WZKMzjfJ-x4>
+
+<https://www.youtube.com/watch?v=rPS6m2iFjHo>
+
+Regressionsanalyse mit R
+
+<https://www.youtube.com/watch?v=uvfZqKsHQsA>
+
+<https://www.youtube.com/watch?v=ef0efKL1Els>

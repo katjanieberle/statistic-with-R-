@@ -1,0 +1,271 @@
+---
+title: "R - Bivariate Regression"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output: html_document
+
+---
+
+## Warum Regressionsanalyse?
+
+- Das Ziel der Regressionsanalyse ist die die Erklärung einer abhängigen Variable $Y$ durch eine oder mehrere unabhängigen Regressoren $X_1, \ldots, X_p$.
+
+- Dabei inkludiert sowohl $Y$ als auch jede Regressor $X_i$ **mehrere* Werte, die unterschiedlichen Individuen zugeordnet werden. 
+
+- Bspw. wird der Einfluss vom Kilometerstand, Motorleistung und weiteren Faktoren auf den Preis von Gebrauchtwagen untersucht. Dabei sollen zunächst die Daten von mehreren (je mehr desto besser) Fahrzeugen erhoben werden. Also Preis, KM-Stand, Motorleisung usw. für jedes einzelne Auto. Für die Datenmatrix findet dann die Regressionsanalyse statt.
+
+- Klassische lineare Regressionsanalyse misst den mittleren linearen Effekt von Regressoren auf den Regressand $Y$ - im Durchschnitt für alle Indivuduals/Fahrzeuge.
+
+- Das Ergebnis einer linearen bivariaten Regression ist ein Modell, dass sich durch eine Gerade darstellen lässt.
+
+- Der Vorteil der Regressionsanalyse ist: Relativ einfach zu verstehen und in der Regel (wenn man nicht die groben Fehler macht) schnell und einfach zu schätzen. 
+
+- Der Nachteil: Um alles richtig bei der Regressionsanalyse zu machen, müsste man sehr detailliert die Daten untersuchen, da einige strenge Annahmen erfüllt sein müssen, damit die Ergebnisse richtig udn vertraunwürdig sind. Die Annahmen sind in der Realität oft nicht erfüllt bzw. werden oft gar nicht beachtet. 
+
+## Bivariate Regression
+
+Ein Spezialfall der Regressionsanalyse ist die bivariate Regression - zur Erklärung von $Y$ wird nur ein Regressor $X$ verwendet - darum **bivariat**.
+
+Angenommen, wir haben $n$ Individuen/Fahrzeuge/Mietobjekte, die wir hinsichtlich eines Merkmals untersuchen wollen.
+
+**Das bivariate Regressionsmodell** lautet:
+
+$$y_i = \beta_0 + \beta_1 \cdot x_i + \varepsilon_i$$
+
+- $\beta_0$ und $\beta_1$ sind die zu schätzenden Koeffizienten
+
+- $varepsion_i$ ist der Fehlerterm für das Individual $i$ - das konnten wir mit dem Modell nicht erklären
+
+Die Modellgleichung sieht genau so aus, wie die Gleichung für eine Gerade. 
+
+Das Ziel ist durch einen Optimierungsalgorithmus so eine Gerade zu finden (d.h. die $\beta$ Koeffizienten zu schätzen), die maximal in der Mitte von der Punktewolte unserer Datenmatrix liegt und somit dem Datenverlauf am besten entspricht.
+
+Also versucht man den Abstand von jedem einzelnen Datenpunkt zur Regressionsgerade (das ist gleichzeitig $\varepsilon_i$ - Fehlerterm) zu minimieren.
+
+$$SSE = \sum_{i=1}^n (y_i - (\beta_0 + \beta_1 \cdot x_i))^2 \rightarrow min$$
+
+
+
+Im bivariaten Fall lassen sich die Koeffizienten sehr einfach interpretieren.
+
+- $\beta_1$ - die Steigung der Regressionsgerade
+
+- $\beta_0$ - der Achsenabschnitt mit der Y-Achse
+
+Die geschätzten Koeffizienten könnten analytisch (formal) hergeleitet werden.
+
+
+$$\hat{\beta}_1 = \frac{s_{xy}}{s^2_x}$$ 
+$$\hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \cdot \overline{x}$$
+- $s_{xy}$ - empirische Kovarianz zwischen $X$ und $Y$
+
+- $s^2_x$ - empirische Varianz von $X$
+
+- $\overline{y}$ - arithmetisches Mittel von $Y$
+
+- $\overline{x}$ - arithmetisches Mittel von $X$
+
+```{r br1}
+load(file="data//input//screen_study.Rdata")
+head(screen_study)
+
+n <- length(screen_study$screen_time)
+xbar <- mean(screen_study$screen_time)
+ybar <- mean(screen_study$test_rslt)
+xvar <- var(screen_study$screen_time)
+xycov <- cov(screen_study$screen_time, screen_study$test_rslt)
+
+beta1 <- xycov/xvar
+beta0 <- ybar - beta1 * xbar
+
+print(c(beta0, beta1))
+```
+
+**Interpretation:**
+
+- wenn man gar nicht ins Handy schaut, dann könnte man fast 100 Punkte erzielen
+
+- mit jeder Std screen_time pro Woche verliert man bei der Klausur im Durchschnitt 1.23 Punkte
+
+```{r br2, echo=FALSE}
+modell <- lm(test_rslt ~ screen_time, data=screen_study)
+plot(screen_study$screen_time, screen_study$test_rslt, pch = 19, cex = 1.8, col = "darkorange",
+     xlab = "Screen Time [h/Tag]", ylab = "Klausurpunkte (0-100)",
+     main = "Screen Time vs. Klausurergebnis")
+
+abline(a = beta0, b = beta1, lwd = 2, col = "blue")
+```
+
+## Modellgüte
+
+- Das Regressionsmodell ist umso besser, je geringer die $\hat{\varepsilon}_i$ sind (geschätzte Fehlerterme = Residuen)
+
+- Modellgüte wird durch das Bestimmheitsmaß $R^2$, das adjustierte Bestimmheitsmaß $R^2_{adj}$, $t-$ und $F-$Tests gemessen (wird für multiple Regression diskutiert) sowie im Rahmen der Residualdiagnostik untersucht.
+
+$$R^2 = r_{xy}^2$$
+mit $r_{xy}$ - empirischer Korrelationskoeffizient.
+
+$$R^2_{adj} = 1 - \left( \frac{(1 - R^2)(n-1)}{n-p-1} \right)$$
+mit $n-$ Anzahl Beobachtungen, $p-$Anzahl von Regressoren ohne Regressionskonstante. 
+
+```{r br3}
+xycor <- cor(screen_study$screen_time, screen_study$test_rslt)
+r2 <- xycor^2
+r2adj <- 1-((1-r2)*(n-1)/(n-1-1))
+
+print(c(r2, r2adj))
+```
+
+
+```{r br4}
+# lm() - linear model in R
+lm(test_rslt ~ screen_time, data=screen_study)
+```
+
+
+# Multiple oder multivariate lineare Regression
+
+Das Modell mit mehr als einem Regressor (außer Regressionskonstante) bezeichnet man als multivariate oder multiple Regression.
+
+Die Ziele der multiplen linearen Regression:
+
+- Mittleren (linearen) Einfluss einzelner Regressoren auf die abhängige Variable zu messen
+
+- Vorhersagen für die abhängige Variable bei gegebenen Regressorwerten zu erstellen
+
+---
+
+Wir erweitern das Modell um eine weitere Variable `age`
+
+```{r mr1}
+mod <- lm(test_rslt ~ screen_time + age, data=screen_study)
+sumy <- summary(mod)
+sumy
+```
+
+
+## Intepretation des Regressionsoutputs:
+
+**Call**: Die angegebene Modellformel - Input (Modellspezifikation)
+
+**Residuals**: Summary der Residualverteilung ($\hat{\varepsilon}_i$ für alle $i$): Min Wert, 1Q (0.25-Quantil), Medianwert, 3Q (0.75-Quantil), Max Wert
+
+**Coefficients**: Geschätzte Modellkoeffizienten und deren Signifikanzüberprüfung
+
+**Estimate**: Die Werte der geschätzten Koeffizienten mit $\hat{\beta}_0$ für Intercept und $\hat{\beta}_1$, $\hat{\beta}_2$,... für andere Regressoren. Die Werte repräsentieren den Effekt der Regressoren auf die abhängige Variable
+
+**Std. Error**: Standardfehler ($\hat{\sigma}$) für die geschätzten Koeffizienten: $\hat{\beta}_0 \mp \hat{\sigma}_0$ repräsentiert die Präzision der Schätzung.
+
+**t value**: Kritischer Wert für den t-Test auf Signifikanz einzelner Regressoren
+
+**Pr(> |t|)**: Implizites Signifikanzniveau $\alpha$ für den entsprechenden t-Test. Je kleiner, desto besser. Gängige Interpretation: $p < 0.05$ - der Effekt gilt als signifikant.
+
+**Residual standard error**: Standardfehler - Standardabweichung der Residuen. Je kleiner, desto besser. Ein Maß für die Vorhersagegenauigkeit.
+
+**Multiple R-squared**: Das Bestimmtheitsmaß $R^2$
+
+**Adjusted R-squared**: Adjustiertes Bestimmtheitsmaß $R^2_{adj}$
+
+**F-statistic**: Kritischer Wert für den F-Test auf Signifikanz aller Regressoren des geschätzten Modells verglichen mit dem Modell, das ausschließlich eine Regressionskonstante inkludiert $y_i = \beta_0 + \varepsilon_i$:
+$$H_0: β_1 = β_2 = ... = β_k = 0 \text{ vs. } H_1: \text{mindestens ein } β_j ≠ 0$$
+
+- **Num. DF** - $5$ Anzahl von Regressoren
+
+- **Denom. DF** - $n-k-1$ Freiheitsgrade Residuen
+
+- **p-value**: Implizites Signifikanzniveau $\alpha$ für den entsprechenden F-Test. Je kleiner, desto besser.
+
+---
+
+Zur Beurteilung des Effektes wird die Spalte **Estimate** betrachtet.
+
+zur Beurteilung der Modellgüte: **Pr(> |t|)**, **Multiple R-squared**, **Adjusted R-squared**, **F-statistic - p-value**
+
+---
+
+Auf die einzelnen Werte des Regressionsoutputs kann in R zugegriffen werden:
+
+![RStudio Oberfläche mit Beschriftungen](graphics/regsumy.jpg)
+
+## Annahmen einer klassischen Regression:
+
+### 1. Linearität in den Parametern
+
+- **Bedeutung**: Zusammenhang ist linear zwischen Regressoren und Regressant
+
+- **Prüfung**: Scatterplots, Residuen vs. Fitted Plot.  
+
+- **Verletzung**: Verzerrte Koeffizienten.
+
+### 2. Erwartungswert der Residuen = 0
+
+- **Bedeutung**: Keine systematische Verzerrung
+
+- **Prüfung**: Residuen-Median $\approx 0$, Residuenplot ohne Muster  
+
+- **Verletzung**: Bias in Intercept
+
+### 3. Homoskedastizität** (konstante Residuen-Varianz)
+
+- **Bedeutung**: Konstante Streuung unabhängig von x-Werten.  
+
+- **Prüfung**: Residuen vs. Fitted (keine Trichterform), Breusch-Pagan Test.  
+
+- **Verletzung**: Ineffiziente Schätzer, verzerrte Standardfehler.
+
+### 4. Keine Autokorrelation der Residuen
+
+- **Bedeutung**: Residuen unabhängig/zufällig (besonders wichtig bei Zeitreihen).  
+
+- **Prüfung**: Durbin-Watson Test, ACF-Plot der Residuen.  
+
+- **Verletzung**: Verzerrte Standardfehler
+
+### 5. Exogenität** (keine simultane Kausalität)
+
+- **Bedeutung**: Prädiktoren nicht korreliert mit Fehlertermen.  
+
+- **Prüfung**: Keine umgekehrte Kausalität, keine Messfehler in Regressoren.  
+
+- **Verletzung**: Endogenitätsproblem → verzerrte Koeffizienten.
+
+### 6. Normalverteilung der Residuen (für Tests)
+
+- **Bedeutung**: Notwendig für valide t-/F-Tests (asymptotisch entbehrlich).  
+
+- **Prüfung**: QQ-Plot, Shapiro-Wilk Test, Histogram.  
+
+- **Verletzung**: Größere Typ-I/II-Fehler in Tests.
+
+### 7. Keine Multikollinearität
+
+- **Bedeutung**: Prädiktoren linear unabhängig.  
+
+- **Prüfung**: VIF (VarianzInflationsFaktor) < 5-10, Korrelationsmatrix
+
+- **Verletzung**: Instabile/infinite Koeffizientenschätzungen.
+
+---
+
+## **Prüffolge in R** (nach `lm()`)
+
+```{r an1, eval=FALSE}
+# 1. Linearität
+#plot(model, which=1)  # Residuen vs Fitted
+
+# 2. Homoskedastizität  
+#plot(model, which=3)  # Scale-Location
+#bptest(model)         # Breusch-Pagan
+
+# 3. Normalität
+#plot(model, which=2)  # QQ-Plot
+#shapiro.test(resid(model))
+
+# 4. Autokorrelation (Zeitreihen)
+#dwtest(model)         # Durbin-Watson
+
+# 5. Multikollinearität
+#car::vif(model)       # VIF-Werte
+
+```
+

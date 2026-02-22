@@ -1,0 +1,407 @@
+---
+title: "R - Zufallsvariablen und Verteilungen"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Diskrete und stetige Verteilungen in R
+
+## Grundidee: Verteilungen & R-Funktionenfamilie
+
+In R haben viele Verteilungen eine gemeinsame Funktionenfamilie:
+
+- `d*` = **Dichte / Wahrscheinlichkeit** (z.B. `dbinom`, `dpois`, `dnorm`)
+- `p*` = **Verteilungsfunktion** (CDF: \(P(X \le x)\)) (z.B. `pbinom`, `ppois`, `pnorm`)
+- `q*` = **Quantilfunktion** (z.B. `qnorm`)
+- `r*` = **Zufallszahlen** (Simulation der Zufallszahlen aus der jeweiligen Verteilung, z.B. `rbinom`, `rpois`, `rnorm`)
+
+Diese Struktur ist bei vielen Verteilungen in R gleich.
+
+---
+
+## Binomialverteilung 
+
+### „Zählen von Erfolgen“
+
+- Feste Anzahl Versuche \(n\)
+
+- Jeder Versuch mit zwei Ausgängen: Erfolg/Misserfolg   
+
+- Erfolgswahrscheinlichkeit pro Versuch \(p oder $\pi$\)  ist konstant
+
+- Zufallsvariable \(X\) beschreibt die Anzahl der Erfolge.
+
+### Aufgabe Binomialverteilung:
+Die Wahrscheinlichkeit für einen Gewinn bei einem Los beträgt 30%. 10 Lose wurden gekauft. 
+
+1. Wie hoch ist die Wahrscheinlichkeit, dass 4 davon einen Gewinn bringen?
+
+```{r binom1}
+n  <- 10     # Anzahl Versuche
+p  <- 0.3    # Erfolgswahrscheinlichkeit
+x  <- 0:n    # mögliche Erfolgszahlen
+
+# Wahrscheinlichkeit P(X = 4 | n = 10, p = 0.3)
+dbinom(4, size = n, prob = p)
+```
+
+2. Wie hoch ist die Wahrscheinlichkeit, dass höchstens 4 davon einen Gewinn bringen? 
+
+```{r binom2}
+# P(X <= 4)
+pbinom(4, size = n, prob = p)
+```
+
+3. Wie hoch ist die Wahrscheinlichkeit, dass mindestens 4 davon einen Gewinn bringen? 
+
+```{r binom3}
+# P(x >= 4) = 1 - P(X <= 3)
+1 - pbinom(3, size = n, prob = p, lower.tail = FALSE)
+
+# oder
+pbinom(3, size = n, prob = p, lower.tail = TRUE)
+```
+
+4. Visualisierung
+```{r binom4}
+# Alle mögliche Wahrscheinlichkeiten P(X = x)
+binom_probs <- dbinom(x, size = n, prob = p)
+binom_probs
+
+plot(x, binom_probs, type = "h", lwd = 3,
+     xlab = "Anzahl Gewinn",
+     ylab = "P(X = x)",
+     main = "Binomialverteilung: n = 10, p = 0.3")
+points(x, binom_probs, pch = 16, col = "blue")
+
+```
+
+---
+
+## Poissonverteilung (Verteilung seltener Ereignisse)
+
+### „Anzahl Ereignisse pro Zeitintervall“
+
+- Ereignisse, die selten auftreten, darum ist die Einzelwahrscheinlichkeit so gering, dass man mit der Anzahl der Ereignisse in einem Zeitintervall arbeitet. Die Ereignis können trotz der Seltenheit aber in einer Vielzahl auftreten.
+
+- Durchschnittsrate $\lambda$ 
+
+- Zufallsvariable \X\ beschreibt die Anzahl der Ereignisse pro Zeitintervall
+
+### Aufgabe Poissonverteilung:
+
+Pro Stunde werden im Durchschnitt 5 Anrufe empfangen.
+
+1. Wie hoch ist die Wahrscheinlichkeit, dass pro Stunde genau 3 Anrufe ankommen?
+```{r pois}
+lam <- 5
+
+# Einzelwahrscheinlichkeit P(X = 3)
+dpois(x=3, lambda = lam)
+```
+
+2. Wie hoch ist die Wahrscheinlichkeit, dass pro Stunde höchstens 3 Anrufe ankommen?
+```{r pois2}
+# P(X <= 3)
+ppois(3, lambda = lam)
+```
+
+3. Wie hoch ist die Wahrscheinlichkeit, dass pro Stunde mindestens 3 Anrufe ankommen?
+
+```{r pois3}
+# P(X >= 3) = 1 - P(X <= 2)
+1 - ppois(2, lambda = lam) 
+
+# oder 
+ppois(2, lambda = lam, lower.tail = FALSE)
+```
+
+4. Visualisierung
+```{r pois4}
+# Alle Wahrscheinlichkeiten bis X=15
+k <- 0:15
+pois_probs <- dpois(k, lambda = lam)
+pois_probs
+
+plot(k, pois_probs, type = "h", lwd = 3,
+     xlab = "Anzahl Anrufe X",
+     ylab = "P(X = x)",
+     main = "Poissonverteilung: lambda = 5")
+points(k, pois_probs, pch = 16, col = "darkgreen")
+```
+
+---
+
+## Stetige Gleichverteilung 
+
+### „Alles im Intervall gleich wahrscheinlich“
+
+- Zufallsvariable kann jeden Wert in einem Intervall [a,b] annehmen
+
+- Basisverteilung für Zufallszahlengeneratoren
+
+### Aufgabe Gleichverteilung
+
+1. Wie hoch ist die Wahrscheinlichkeit, dass eine gleichverteilte Zufallsvariable $X \sim G(10;20)$ den Wert zwischen 13 und 15 annimmt?
+
+```{r unif1}
+a <- 10   # untere Grenze
+b <- 20  # obere Grenze
+
+# P(13 <= X <= 15)
+punif(15, min = a, max = b) - punif(13, min = a, max = b)
+```
+2. Visualisierung
+
+```{r unif2}
+x <- seq(a, b, length.out = 200)
+y <- dunif(x, min = a, max = b)
+
+plot(x, y, type = "l", lwd = 2,
+     xlab = "x", ylab = "Dichte f(x)",
+     main = "Stetige Gleichverteilung G(10, 20)")
+abline(h = 0, col = "grey")
+```
+
+---
+
+## Normalverteilung (Gauß-Verteilung)
+
+- eine der wichtigsten stetigen Verteilungen, da viele stetige Zufallsvariablen normalverteilt sind bzw. über das Gesetz der großen Zahlen als normalverteilt gelten
+
+- Parameter: Mittelwert $\mu$ und Varianz $\sigma^2$
+
+### Aufgabe Normalverteilung
+
+Die Körpergröße $X$ ist normalverteilt mit dem Mittelwert $\mu = 170$ cm und mit der Varianz $\sigma^2 = 25$ cm$^2$
+
+1. Wie hoch in die Wahrscheinlichkeit, dass eine Person genau 173 cm ist?
+
+```{r norm1}
+0
+```
+2. Wie hoch in die Wahrscheinlichkeit, dass eine Person zwischen 165 und 180 cm groß ist?
+
+```{r norm2}
+pnorm(180, mean = 170, sd = 5) - pnorm(165, mean = 170, sd = 5)
+```
+
+die Fragestellung ist identisch zu der Fragestellung über die Standardnormalverteilung mit $\mu=0$ und $\sigma^2=1$
+```{r norm3}
+pnorm(2, mean = 0, sd = 1) - pnorm(-1, mean = 0, sd = 1)
+```
+
+3. Visualisierung
+
+```{r norm4}
+mu <- 170
+sd <- 5
+
+x <- seq(150, 200, length.out = 400)
+y <- dnorm(x, mean = mu, sd = sd)
+
+plot(x, y, type = "l", lwd = 2, col = "blue",
+     xlab = "Körpergröße (cm)",
+     ylab = "Dichte f(x)",
+     main = "Normalverteilung N(170, 5^2)")
+abline(v = mu, col = "red", lty = 2)  # Mittelwert
+```
+
+**Standardnormalverteilung: Der Spezialfall der Normalverteilung N(0,1)**
+
+
+```{r norm5}
+mu <- 0
+sd <- 1
+
+x <- seq(-6, 6, length.out = 400)
+y <- dnorm(x, mean = mu, sd = sd)
+
+plot(x, y, type = "l", lwd = 2, col = "black",
+     xlab = "x",
+     ylab = "f(x)",
+     main = "Standardnormalverteilung")
+abline(v = mu, col = "red", lty = 2)  # Mittelwert
+```
+
+---
+
+## Zentraler Grenzwertsatz
+
+**Kernidee:** Die Verteilung der Stichprobenmittelwerte aus einer großen Anzahl unabhängiger Beobachtungen aus einer beliebig verteilten Grundgesamtheit nähert sich bei großem Stichprobenumfang $n$ einer Normalverteilung an.
+
+**Wichtig:** Die Originaldaten müssen nicht normalverteilt sein. Die Normalverteilung entsteht durch die "Mittelung" in den "großen" Stichproben.
+
+**Praktische Bedeutung:** Rechtfertigt Annahmen der Normalverteilung für Konfidenzintervalle und Tests ab $n \geq 30$. Je schiefer/asymmetrischer ist die Originalverteilung, desto größer muss $n$ sein.
+
+```{r zgw1}
+set.seed(42)
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+
+lambda <- 2
+n_sizes <- c(2, 10, 30, 100)
+n_sims <- 5000
+
+for (n in n_sizes) {
+  # Stichprobenmittel simulieren
+  sim_means <- replicate(n_sims, mean(rpois(n, lambda = lambda)))
+  
+  # Histogramm
+  hist(sim_means, breaks = 30, freq = FALSE,
+       main = paste("n =", n),
+       xlab = "Stichprobenmittel", ylab = "Dichte",
+       col = "lightgreen", border = "white")
+  
+  # Theoretische Normaldichte: N(λ, sqrt(λ/n))
+  x_seq <- seq(min(sim_means)-0.1, max(sim_means)+0.1, length.out = 100)
+  theo_sd <- sqrt(lambda / n)
+  lines(x_seq, dnorm(x_seq, mean = lambda, sd = theo_sd), 
+        col = "red", lwd = 2)
+  
+  legend("topright", legend = paste("N(2,", round(theo_sd, 2), ")"), 
+         col = "red", lwd = 2, bty = "n")
+}
+
+mtext("Zentraler Grenzwertsatz: Mittel aus Poisson(λ=2)", outer = TRUE, cex = 1.2)
+```
+
+---
+
+---
+
+## Zufallszahlengenerator
+
+### Grundidee: Was sind Zufallszahlen?
+
+Zufallszahlen sind Zahlen, deren Wert man vorher nicht vorhersagen kann.
+
+**Beispiel:** Wenn du einen fairen Würfel wirfst, ist die Augenzahl eine Zufallszahl aus 
+\{1, 2, 3, 4, 5, 6\}
+
+
+In der Statistik und im Computer interessieren uns oft kontinuierliche/reele Zufallszahlen im Intervall [0,1] oder in einem anderen Bereich. Das ist genau das, was `runif()` in R macht.
+
+### Was ist ein Zufallszahlengenerator?
+
+Ein Zufallszahlengenerator (RNG) ist ein Algorithmus, der eine Folge von Zahlen erzeugt, die wie echte Zufallszahlen aussehen:
+
+- Sie sollen gleichmäßig verteilt sein.
+
+- Sie sollen keine erkennbaren Muster haben.
+
+**In der Realität:`**
+
+Echte physikalische Zufallszahlen (z.B. aus Rauschen, Radioaktivität) sind selten in Standardsoftware eingebaut.
+
+Stattdessen verwendet R **Pseudozufallszahlen.**
+
+**Pseudozufallszahlen** sind nicht wirklich zufällig, sondern werden von einem deterministischen Algorithmus erzeugt.
+
+Wichtige Eigenschaften eines RNG:
+
+- Der Algorithmus startet mit einem Startwert (Seed).
+
+- Bei gleichem Seed entsteht immer dieselbe Zahlenfolge - das ist wichtig für Reproduzierbarkeit.
+
+**Beispiel in R:** Pseudozufallszahlen sind reproduzierbar, wenn der Seed gleich bleibt.
+
+```{r rng}
+set.seed(123)
+runif(n, min = 0, max = 1)
+
+set.seed(123)
+runif(n, min = 0, max = 1)
+```
+
+### Schritt‑für‑Schritt: Wie funktioniert `runif`?
+
+`runif(n, min = 0, max = 1)` steht für uniform random numbers - gleichverteilte Zufallszahlen.
+
+- `n`: Anzahl der Zufallszahlen.
+
+- `min`: Untere Grenze des Intervalls.
+
+- `max`: Obere Grenze des Intervalls.
+
+**Schritt 1:**  Interner Zustand (Seed)
+
+R hat einen internen Zustand des Zufallszahlengenerators. Dieser Zustand wird durch `set.seed(x)` festgelegt. Wenn man nichts setzt, nutzt R meist den aktuellen Systemzeit‑Wert als Seed.
+
+**Schritt 2:** Erzeugung der Zahlenfolge
+
+- R verwendet einen Pseudozufallszahlengenerator‑Algorithmus (z.B. Mersenne‑Twister, Standard in R).
+
+- Der Algorithmus berechnet aus dem aktuellen Zustand eine Zahl im Intervall [0,1].
+
+- Dann aktualisiert er den Zustand, damit die nächste Zahl anders ist.
+
+
+Man kann `runif` nutzen, um z.B.:
+
+- Zufallszahlen in einem anderen Intervall zu erzeugen (z.B. `min=10` und `max=20`)    
+
+- Zufallszahlen für Simulationen zu nutzen:
+
+```{r rng2}
+set.seed(123)
+x <- runif(1000, min = 0, max = 1)
+hist(x, main = "Histogramm von runif(1000)")
+```
+---
+
+**Typische Verwendungen von RNG in R:**
+- Monte‑Carlo‑Simulationen: Erwartungswerte, Wahrscheinlichkeiten oder Integrale numerisch berechnen, z.B. $\pi$ über Zufallspunkte im Einheitsquadrat approximieren.
+
+- Bootstrap / Resampling: Konfidenzintervalle und Standardfehler durch wiederholtes Ziehen von Stichproben mit Zurücklegen aus den Daten.
+
+- Randomisierte Algorithmen: z.B. Train‑Test‑Split, Cross‑Validation, zufällige Startwerte bei Optimierung und Clustering (k‑means, EM, neuronale Netze).
+
+- Simulation von Szenarien in Finance/Versicherung: Kreditrisiko, Optionspreise, Schadenszenarien, Portfoliorisiko über viele zufällige Pfade.
+
+- Randomisierungsexperimente: Zufällige Zuweisung von Probanden zu Gruppen in Simulationsstudien oder bei power‑Analysen.
+
+- Datenreduktion und -prüfung: Zufällige Stichproben aus großen Datensätzen ziehen (sample()) um Plots, Checks oder Prototypen zu machen.
+
+---
+
+## Simulation Binomialverteilung $B(n,p)$ mit der Gleichverteilung
+
+**Idee:** Ein Bernoulli‑Versuch mit $P(X=1) = p$ lässt sich aus einer Gleichverteilung $G(0,1)$ konstruieren.
+
+1. Ziehe `g` aus $G(0,1)$ (z.B. `runif(1)` in R).
+
+2. Erzeuge $X = 1$, falls $g <= p$ und $X = 0$, falls $g > p$.
+
+3. Eine Binomialverteilung ist die Summe von  `n`  unabhängigen Bernoulli(p)‑Variablen.
+
+4. Initialisiere `s <- 0`
+
+5. Wiederhole `n` Mal:
+
+- Ziehe $g_i$ aus $G(0,1)$
+
+- Erzeuge $X = 1$, falls $g <= p$ und $X = 0$, falls $g > p$.
+
+- `s <- s + g_i`
+
+6. `s` ist die Realisation der $B(n,p)$
+
+```{r bin}
+binom_from_uniform <- function(n, p) {
+  s <- 0
+  for (i in 1:n) {
+    g <- runif(1)          # g_i ~ G(0,1)
+    x <- if (g <= p) 1 else 0  # Bernoulli(p)
+    s <- s + x
+  }
+  s
+}
+
+binom_from_uniform(n = 10, p = 0.2)
+```
+
+`binom(n_draws, size = n, prob = p)` erfolgt nach dem gleichen Prinzip:
+„Summe von `n` Bernoulli(p) pro Ziehungsfolge“, nur effizient in C implementiert.

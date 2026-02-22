@@ -1,0 +1,267 @@
+---
+title: "R - Data Frames & Data Import/Export"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Data Frames
+
+**Data Frame:** Eine flexible, tabellarische Datenstruktur, deren Spalten unterschiedliche Datentypen enthalten können, z. B. numeric, character, boolean. Data Frames werden häufig in der Datenanalyse verwendet, da die meisten datenanalytischen Funktionen sie als Eingabeparameter erwarten.
+
+Zum Vergleich enthält eine **Matrix** alle Elemente vom gleichen Datentyp (bspw. nur numeric oder nur character).
+
+```{r newdf}
+chocolate <- data.frame(
+  brand = c("Lindt", "Milka", "Toblerone", "Ferrero Rocher", "Ritter Sport",
+            "Lindt", "Milka", "KitKat", "Snickers", "Milky Way"),
+  type = c("Dark 70%", "Milk Almond", "White Triangle", "Hazelnut", "Marzipan",
+           "Excellence 85%", "Oreo", "Chunky", "Peanut", "Caramel"),
+  weight = c(100, 200, 360, 200, 100, 50, 120, 40, 50, 55), 
+  price = c("2.99", "1.49", "5.99", "4.49", "1.19", "1.79", "1.29", "0.79", "0.89", "0.99"),
+  use_by = c("2026-03-19","2026-11-07","2026-01-12","2026-05-17","2026-06-16",
+           "2026-01-14","2026-08-03","2026-09-15","2026-04-12","2026-09-11"),
+  stringsAsFactors = FALSE
+)
+```
+
+## Manipulationen mit data frames
+
+### Data Frame analysieren:
+
+```{r view}
+View(chocolate)       # R-Studio Tabelle - klickbar!
+head(chocolate)       # zeigt die ersten 6 Records
+print(chocolate)      # nicht zu empfehlen bei großen data frames     
+
+dim(chocolate)        # Dimensionen des Datensatzes [Zeilenanzahl, Spaltenanzahl]
+str(chocolate)        # Struktur des data frames
+```
+
+### Data Frame indizieren:
+
+```{r transform, eval = FALSE}
+chocolate$price       # eine einzelne Spalte ausgeben mit $
+chocolate[,3]         # die 3.te Spalte ausgeben
+chocolate[,"price"]   # die Spalte price ausgeben
+
+chocolate[1,]         # die erste Zeile ausgeben
+
+chocolate[1,"price"]  # das erste Element aus der Spalte price ausgeben
+chocolate[1,3]        
+```
+
+### Neue Spalte erstellen:
+
+```{r newcol}
+chocolate$newcol_1  <- 1:10
+
+chocolate$newcol_2  <- 1
+
+head(chocolate)
+```
+
+---
+
+### Datentyp in den Spalten ändern:
+
+In den meisten Fällen ist es notwendig, den unformatierten Inputdaten vor der Verarbeitung die richtigen Datentypen zuzuweisen. Anderenfalls können die Transformationen zu Fehlern führen. 
+
+- `as.numeric()`
+
+```{r num}
+# sum(chocolate$price) # FEHLER
+chocolate$price_numeric <- as.numeric(chocolate$price)
+
+# jetzt sind arithmetische Operationen korrekt möglich
+sum(chocolate$price_numeric)
+```
+
+- `as.Date()`
+
+```{r date}
+# Umwandlung in Date-Objekte (ISO-Format: Jahr-Monat-Tag)
+chocolate$use_by_date <- as.Date(chocolate$use_by, format = "%Y-%m-%d")
+chocolate$new_date <- chocolate$use_by_date + 7 # Eine Woche danach
+```
+
+- `as.factor()`
+
+Ein `factor` in R repräsentiert eine kategorische Variable, also Ausprägungen wie „männlich/weiblich“, „rot/gelb/grün“ oder „Produkt A/B/C“. 
+Intern werden dafür Zahlen gespeichert (1, 2, 3, …), nach außen sieht man die Labels („A“, „B“, „C“). Faktoren sind wichtig für Statistik und Modelle (z.B. lm, aov), damit R weiß, dass eine Variable Kategorien und keine metrischen Zahlen darstellt.
+
+```{r factor}
+
+chocolate$brand_factor <- as.factor(chocolate$brand)
+levels(chocolate$brand_factor)  # zeigt die Faktorstufen
+
+table(chocolate$brand_factor)
+```
+
+--
+
+### Statistische Zusammenfassung eines Data Frames:
+
+```{r sumy}
+summary(chocolate)    # Zusammenfassung deskriptiver statistische Kennzahlen
+
+mean(chocolate$price_numeric)
+median(chocolate$price_numeric)
+quantile(chocolate$price_numeric, 0.5) # auch median
+min(chocolate$price_numeric)
+max(chocolate$price_numeric)
+sd(chocolate$price_numeric)
+var(chocolate$price_numeric)
+```
+
+### Data Frame Manipulationen:
+
+```{r manip}
+subset(chocolate, price_numeric > 2, select = c("brand","price_numeric"))
+
+chocolate_subset = subset(chocolate, select = c("price_numeric", "weight"))
+
+colMeans(chocolate_subset)
+colSums(chocolate_subset)
+```
+
+---
+
+---
+
+## Übungsaufgaben:
+
+Erstelle einen Data Frame `products` mit den Spalten
+`id` (numeric), `name`  (character), `price` (numeric), `store` (numeric) mit jeweils 5 Beobachtungen. 
+
+1. Zeige die Struktur und die ersten Zeilen
+
+2. Gib nur die Spalte `price` aus
+
+3. Gib nur die Produkte mit `store > 10` aus
+
+4. Erstelle eine neue Spalte `products$sale`, die sich als `price*store` berechnen lässt
+
+5. Erstelle eine neue Spalte `products$price_new`, die eine Preiserhöhung um 5% wiederspiegelt.
+
+6. Erstelle eine Zusammenfassung statistischer Kennzahlen als `summary()` und interpretiere die Kennzahlen
+
+## Lösungsvorschlag:
+
+```{r ex1, eval=FALSE}
+products <- data.frame(
+  id     = c(1, 2, 3, 4, 5),
+  name   = c("Tee", "Kaffee", "Milch", "Saft", "Wasser"),
+  price  = c(2.5, 4.0, 1.2, 3.1, 0.8),
+  store  = c(10, 5, 20, 8, 50),
+  stringsAsFactors = FALSE
+)
+
+str(products)  # 1
+head(products)
+
+products$price  # 2
+
+subset(products, store > 10) # 3
+
+products$sale = products$price * products$store # 4
+
+products$price_new = products$price * 1.05 # 5
+
+summary(products) # 6
+```
+
+---
+
+---
+
+## Datenformate: RData-Format
+RData (.RData, .Rda) speichert komplette R-Objekte (Data Frames, Modelle, Variablen) mit allen Attributen, Klassen und Formatierungen. 
+
+**Vorteile vs. CSV:**
+- Erhält Data Frame-Struktur, Faktoren, Labels
+- Schneller (binär)
+- Mehrere Objekte gleichzeitig
+- für R-spezifische Analysen optimiert
+
+```{r rdata, eval=FALSE}
+# Speichern
+save(iris, mtcars, file = "meine_daten.RData")
+
+# Laden  
+load("meine_daten.RData")  # Objekte iris, mtcars direkt verfügbar!
+ls()  # Zeigt geladene Objekte
+```
+
+## Dateneinlesen: Dateipfade/ Paths
+- **Absoluter Pfad:** Kompletter Pfad:
+`C:\\Dokumente\\Benutzer\\Hund\\RProjekt\\daten.csv`
+
+- **Relativer Pfad:** Bezogen auf aktuelles Arbeitsverzeichnis: `daten.csv`
+
+- **Lokaler Pfad:** Pfad auf eigenem Rechner, der bei einem anderen Nutzer in der Regel nicht funktionieren wird.
+
+`data_path = C:\\Dokumente\\Benutzer\\Hund\\RProjekt\\daten.csv`
+
+Es empfiehlt sich die Pfade zu parametrisieren, damit der Code wiederverwendbar ist:
+
+
+## Backslash in Pfaden (Windows-Problem)
+
+Windows verwendet `\`, R interpretiert als Escape-Zeichen (`\n` = Zeilenumbruch). 
+Lösung: Forward-Slash `/` oder doppelter Backslash `\\` in den Pfaden zu nutzen.
+
+```{r slash, eval = FALSE}
+# FALSCH → Fehler!
+read.csv("C:\data\verkauf.csv")  # \d = Fehler!
+
+# RICHTIG
+read.csv("C:/data/verkauf.csv")  # /
+read.csv("C:\\data\\verkauf.csv")  # \\
+
+#So prüfst du, ob es einen File im Verzeichnis gibt
+file.exists("data/verkauf.csv")  # TRUE/FALSE prüfen
+```
+
+## Gängige Datenformate und Import/Export
+
+Verschiedene Formate für unterschiedliche Anwendungen. 
+Für xlsx Format benötigt man das zusätzliche Packet `openxlsx`.
+
+```{r data, eval=FALSE}
+# CSV (Standard, einfach, groß)
+datacsv <- read.csv("data\\input\\umsatz.csv")      # Import
+write.csv(datacsv, "data\\output\\export.csv", row.names = FALSE)  # Export
+
+# Excel (xlsx braucht Paket openxlsx)
+# install.packages("openxlsx")
+library(openxlsx)
+dataxlss <- read.xlsx("data\\input\\report.xlsx", sheet = 1)
+write.xlsx(dataxlsx, "data\\output\\report.xlsx")
+
+# TXT (beliebiges Trennzeichen)
+datatxt <- read.table("data\\input\\data.txt", header = TRUE, sep = "\t")  
+write.table(datatxt, "data\\output\\data.txt", sep = "\t", row.names = FALSE)
+
+# Vergleich:
+# CSV: Universell, klein | TXT: Flexibel | RData: R-intern | XLSX: Excel-kompatibel
+```
+
+## Dateneinlesen mit der richtigen Formatierung
+
+**Beispiel:** `read.csv` - die anderen Funktionen analog
+
+```{r settings, eval=FALSE}
+daten <- read.csv("data\\input\\verkauf.csv", 
+                  header = TRUE,      # Erste Zeile = Spaltennamen
+                  sep = ",",          # Trennzeichen
+                  dec = ".",          # Dezimaltrennzeichen
+                  na.strings = "NA",  # NA für fehlende daten
+                  stringsAsFactors = FALSE)  # Text bleibt Text
+```
+
+---
+
+

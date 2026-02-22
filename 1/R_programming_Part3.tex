@@ -1,0 +1,362 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={R Lesson 3},
+  pdfauthor={Dr.~Katja Nieberle},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{R Lesson 3}
+\author{Dr.~Katja Nieberle}
+\date{2026-01-04}
+
+\begin{document}
+\maketitle
+
+\subsection{Datenformate: RData-Format}\label{datenformate-rdata-format}
+
+RData (.RData, .Rda) speichert komplette R-Objekte (Data Frames,
+Modelle, Variablen) mit allen Attributen, Klassen und Formatierungen.
+Anders als CSV (nur Rohdaten).
+
+\textbf{Vorteile vs.~CSV:} - Erhält Data Frame-Struktur, Faktoren,
+Labels - Schneller (binär) - Mehrere Objekte gleichzeitig - für
+R-spezifische Analysen optimiert
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Speichern}
+\FunctionTok{save}\NormalTok{(iris, mtcars, }\AttributeTok{file =} \StringTok{"meine\_daten.RData"}\NormalTok{)}
+
+\CommentTok{\# Laden  }
+\FunctionTok{load}\NormalTok{(}\StringTok{"meine\_daten.RData"}\NormalTok{)  }\CommentTok{\# Objekte iris, mtcars direkt verfügbar!}
+\FunctionTok{ls}\NormalTok{()  }\CommentTok{\# Zeigt geladene Objekte}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Dateneinlesen:
+Dateipfade/Filepfade/Paths}\label{dateneinlesen-dateipfadefilepfadepaths}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Absoluter Pfad:} Kompletter Pfad:
+  \texttt{C:\textbackslash{}\textbackslash{}Dokumente\textbackslash{}\textbackslash{}Benutzer\textbackslash{}\textbackslash{}Hund\textbackslash{}\textbackslash{}RProjekt\textbackslash{}\textbackslash{}daten.csv}
+\item
+  \textbf{Relativer Pfad:} Bezogen auf aktuelles Arbeitsverzeichnis:
+  \texttt{daten.csv}
+\item
+  \textbf{Lokaler Pfad:} Pfad auf eigenem Rechner, der bei einem anderen
+  Nutzer in der Regel nicht funktionieren wird.
+\end{itemize}
+
+Es empfiehlt sich die Pfade zu parametrisieren, damit der Code
+wiederverwendbar ist:
+
+\texttt{data\_path\ =\ C:\textbackslash{}\textbackslash{}Dokumente\textbackslash{}\textbackslash{}Benutzer\textbackslash{}\textbackslash{}Hund\textbackslash{}\textbackslash{}RProjekt\textbackslash{}\textbackslash{}daten.csv}
+
+\texttt{read.csv(data\_path)}
+
+\subsection{Backslash in Pfaden
+(Windows-Problem)}\label{backslash-in-pfaden-windows-problem}
+
+Windows verwendet \texttt{\textbackslash{}}, R interpretiert als
+Escape-Zeichen (\n = Zeilenumbruch). Lösung: Forward-Slash \texttt{/}
+oder doppelter Backslash \texttt{\textbackslash{}\textbackslash{}} in
+den Pfaden zu nutzen.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# FALSCH → Fehler!}
+\FunctionTok{read.csv}\NormalTok{(}\StringTok{"C:\textbackslash{}data}\SpecialCharTok{\textbackslash{}v}\StringTok{erkauf.csv"}\NormalTok{)  }\CommentTok{\# \textbackslash{}d = Fehler!}
+
+\CommentTok{\# RICHTIG}
+\FunctionTok{read.csv}\NormalTok{(}\StringTok{"C:/data/verkauf.csv"}\NormalTok{)  }\CommentTok{\# /}
+\FunctionTok{read.csv}\NormalTok{(}\StringTok{"C:}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{data}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{verkauf.csv"}\NormalTok{)  }\CommentTok{\# \textbackslash{}\textbackslash{}}
+
+\CommentTok{\#So prüfst du, ob es einen File im Verzeichnis gibt}
+\FunctionTok{file.exists}\NormalTok{(}\StringTok{"data/verkauf.csv"}\NormalTok{)  }\CommentTok{\# TRUE/FALSE prüfen}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Gängige Datenformate und
+Import/Export}\label{guxe4ngige-datenformate-und-importexport}
+
+Verschiedene Formate für unterschiedliche Anwendungen. Für xlsx Format
+benötigt man das zusätzliche Packet \texttt{openxlsx}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# CSV (Standard, einfach, groß)}
+\NormalTok{daten }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"umsatz.csv"}\NormalTok{)      }\CommentTok{\# Import}
+\FunctionTok{write.csv}\NormalTok{(daten, }\StringTok{"export.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)  }\CommentTok{\# Export}
+
+\CommentTok{\# Excel (xlsx braucht Paket openxlsx)}
+\CommentTok{\# install.packages("openxlsx")}
+\FunctionTok{library}\NormalTok{(openxlsx)}
+\NormalTok{daten }\OtherTok{\textless{}{-}} \FunctionTok{read.xlsx}\NormalTok{(}\StringTok{"report.xlsx"}\NormalTok{, }\AttributeTok{sheet =} \DecValTok{1}\NormalTok{)}
+\FunctionTok{write.xlsx}\NormalTok{(daten, }\StringTok{"report.xlsx"}\NormalTok{)}
+
+\CommentTok{\# TXT (beliebiges Trennzeichen)}
+\NormalTok{daten }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"data.txt"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{sep =} \StringTok{"}\SpecialCharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)  }
+\FunctionTok{write.table}\NormalTok{(daten, }\StringTok{"data.txt"}\NormalTok{, }\AttributeTok{sep =} \StringTok{"}\SpecialCharTok{\textbackslash{}t}\StringTok{"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+
+\CommentTok{\# Vergleich:}
+\CommentTok{\# CSV: Universell, klein | TXT: Flexibel | RData: R{-}intern | XLSX: Excel{-}kompatibel}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Data Frames}\label{data-frames}
+
+\textbf{Data Frame:} Flexible Tabellenstruktur mit Spalten von
+unterschiedliche Typen: numeric, character, boolean Die Data Frames
+werden extrem häufig in der Datenanalyse verwendet. Die meisten
+datenanalytische Funktionen erwarten/nutzen Data Frames als
+Eingabeparameter.
+
+Zum Vergleich enthält eine \textbf{Matrix} alle Elemente vom gleichen
+Datentyp (nur numeric/character/boolean).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chocolate }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{brand =} \FunctionTok{c}\NormalTok{(}\StringTok{"Lindt"}\NormalTok{, }\StringTok{"Milka"}\NormalTok{, }\StringTok{"Toblerone"}\NormalTok{, }\StringTok{"Ferrero Rocher"}\NormalTok{, }\StringTok{"Ritter Sport"}\NormalTok{,}
+            \StringTok{"Lindt"}\NormalTok{, }\StringTok{"Milka"}\NormalTok{, }\StringTok{"KitKat"}\NormalTok{, }\StringTok{"Snickers"}\NormalTok{, }\StringTok{"Milky Way"}\NormalTok{),}
+  \AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\StringTok{"Dark 70\%"}\NormalTok{, }\StringTok{"Milk Almond"}\NormalTok{, }\StringTok{"White Triangle"}\NormalTok{, }\StringTok{"Hazelnut"}\NormalTok{, }\StringTok{"Marzipan"}\NormalTok{,}
+           \StringTok{"Excellence 85\%"}\NormalTok{, }\StringTok{"Oreo"}\NormalTok{, }\StringTok{"Chunky"}\NormalTok{, }\StringTok{"Peanut"}\NormalTok{, }\StringTok{"Caramel"}\NormalTok{),}
+  \AttributeTok{weight =} \FunctionTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{200}\NormalTok{, }\DecValTok{360}\NormalTok{, }\DecValTok{200}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{120}\NormalTok{, }\DecValTok{40}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{55}\NormalTok{), }
+  \AttributeTok{price =} \FunctionTok{c}\NormalTok{(}\FloatTok{2.99}\NormalTok{, }\FloatTok{1.49}\NormalTok{, }\FloatTok{5.99}\NormalTok{, }\FloatTok{4.49}\NormalTok{, }\FloatTok{1.19}\NormalTok{, }\FloatTok{1.79}\NormalTok{, }\FloatTok{1.29}\NormalTok{, }\FloatTok{0.79}\NormalTok{, }\FloatTok{0.89}\NormalTok{, }\FloatTok{0.99}\NormalTok{),}
+  \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Manipulationen mit data
+frames}\label{manipulationen-mit-data-frames}
+
+\textbf{data frame analysieren:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{View}\NormalTok{(chocolate)       }\CommentTok{\# R{-}Studio Tabelle {-} klickbar!}
+\FunctionTok{head}\NormalTok{(chocolate)       }\CommentTok{\# zeigt die ersten 6 Records}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            brand           type weight price
+## 1          Lindt       Dark 70%    100  2.99
+## 2          Milka    Milk Almond    200  1.49
+## 3      Toblerone White Triangle    360  5.99
+## 4 Ferrero Rocher       Hazelnut    200  4.49
+## 5   Ritter Sport       Marzipan    100  1.19
+## 6          Lindt Excellence 85%     50  1.79
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(chocolate)      }\CommentTok{\# nicht zu empfehlen bei großen data frames     }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             brand           type weight price
+## 1           Lindt       Dark 70%    100  2.99
+## 2           Milka    Milk Almond    200  1.49
+## 3       Toblerone White Triangle    360  5.99
+## 4  Ferrero Rocher       Hazelnut    200  4.49
+## 5    Ritter Sport       Marzipan    100  1.19
+## 6           Lindt Excellence 85%     50  1.79
+## 7           Milka           Oreo    120  1.29
+## 8          KitKat         Chunky     40  0.79
+## 9        Snickers         Peanut     50  0.89
+## 10      Milky Way        Caramel     55  0.99
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(chocolate)        }\CommentTok{\# Dimensionen des Datensatzes [Zeilenanzahl, Spaltenanzahl]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10  4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chocolate)        }\CommentTok{\# Struktur des data frames}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    10 obs. of  4 variables:
+##  $ brand : chr  "Lindt" "Milka" "Toblerone" "Ferrero Rocher" ...
+##  $ type  : chr  "Dark 70%" "Milk Almond" "White Triangle" "Hazelnut" ...
+##  $ weight: num  100 200 360 200 100 50 120 40 50 55
+##  $ price : num  2.99 1.49 5.99 4.49 1.19 1.79 1.29 0.79 0.89 0.99
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(chocolate)    }\CommentTok{\# Zusammenfassung deskriptiver statistische Kennzahlen}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     brand               type               weight           price     
+##  Length:10          Length:10          Min.   : 40.00   Min.   :0.79  
+##  Class :character   Class :character   1st Qu.: 51.25   1st Qu.:1.04  
+##  Mode  :character   Mode  :character   Median :100.00   Median :1.39  
+##                                        Mean   :127.50   Mean   :2.19  
+##                                        3rd Qu.:180.00   3rd Qu.:2.69  
+##                                        Max.   :360.00   Max.   :5.99
+\end{verbatim}
+
+\textbf{data frame indizieren:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{price       }\CommentTok{\# eine einzelne Spalte ausgeben mit $}
+\NormalTok{chocolate[,}\DecValTok{3}\NormalTok{]         }\CommentTok{\# die 3.te Spalte ausgeben}
+\NormalTok{chocolate[,}\StringTok{"price"}\NormalTok{]   }\CommentTok{\# die Spalte price ausgeben}
+
+\NormalTok{chocolate[}\DecValTok{1}\NormalTok{,]         }\CommentTok{\# die erste Zeile ausgeben}
+
+\NormalTok{chocolate[}\DecValTok{1}\NormalTok{,}\StringTok{"price"}\NormalTok{]  }\CommentTok{\# das erste Element aus der Spalte price ausgeben}
+\NormalTok{chocolate[}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{]        }
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Neue Spalte erstellen:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{price\_new }\OtherTok{\textless{}{-}}\NormalTok{ chocolate}\SpecialCharTok{$}\NormalTok{price  }\SpecialCharTok{*} \FloatTok{0.1}
+
+\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{price\_g }\OtherTok{\textless{}{-}}\NormalTok{ chocolate}\SpecialCharTok{$}\NormalTok{price}\SpecialCharTok{/}\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{weight}
+
+\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{newcol\_1  }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}
+
+\NormalTok{chocolate}\SpecialCharTok{$}\NormalTok{newcol\_2  }\OtherTok{\textless{}{-}} \DecValTok{1}
+
+\FunctionTok{head}\NormalTok{(chocolate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            brand           type weight price price_new    price_g newcol_1
+## 1          Lindt       Dark 70%    100  2.99     0.299 0.02990000        1
+## 2          Milka    Milk Almond    200  1.49     0.149 0.00745000        2
+## 3      Toblerone White Triangle    360  5.99     0.599 0.01663889        3
+## 4 Ferrero Rocher       Hazelnut    200  4.49     0.449 0.02245000        4
+## 5   Ritter Sport       Marzipan    100  1.19     0.119 0.01190000        5
+## 6          Lindt Excellence 85%     50  1.79     0.179 0.03580000        6
+##   newcol_2
+## 1        1
+## 2        1
+## 3        1
+## 4        1
+## 5        1
+## 6        1
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,274 @@
+---
+title: "R - Konfidenzintervalle und Hypothesentests"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output: html_document
+---
+
+## Konfidenzintervalle 
+
+Konfidenzintervalle geben einen Plausibilitätsbereich für den unbekannten Populationsmittelwert $\mu$ an.
+
+**Interpretation** eines 95%-Konfidenzintervalls: Für die gegebene Stichprobe überdeckt das berechnete Intervalle den wahren $\mu$ mit 95%-ger Wahrscheinlichkeit.
+
+1. Für **Große Stichproben** ($n \gtrsim 30$) mit der unbekannten Varianz der Grundgesamtheit (die Varianz der Stichprobe ist bekannt) lautet das *zweiseitige* symmetrische Konfidenzintervall
+
+$$\overline{x} \mp z_{1-\alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+
+2. Für **Kleine Stichproben** ($n < 30$) mit der unbekannten Varianz der Grundgesamtheit (die Varianz der Stichprobe ist bekannt) lautet das *zweiseitige* symmetrische Konfidenzintervall
+
+$$\overline{x} \mp t_{n-1,1-\alpha/2} \cdot \frac{s}{  \sqrt{n}}$$
+### Beispiel: Konfidenzintervall für Große Stichprobe
+
+```{r ki1}
+alpha <- 0.05
+# Stichprobe groß (n = 200)
+x_gross <- c(98, 102, 99, 101, 103, 97, 104, 100, 105, 96, 107, 99, 102, 98, 101, 
+             103, 99, 100, 104, 97)
+x_gross <- rep(x_gross, length.out = 200)
+n_gross <- length(x_gross)
+xbar_gross <- mean(x_gross)
+s_gross <- sd(x_gross)
+se_gross <- s_gross / sqrt(n_gross)
+z_crit <- qnorm(1 - alpha/2)
+
+ci_gross <- c(xbar_gross - z_crit * se_gross,
+              xbar_gross + z_crit * se_gross)
+print("Untergrenze: ")
+print(ci_gross[1]) 
+print("Obergrenze: ") 
+print(ci_gross[2])
+```
+
+### Beispiel: Konfidenzintervall für Kleine Stichprobe
+
+```{r ki3}
+alpha <- 0.05
+# Stichprobe klein (n = 15)
+x_klein <- c(92, 98, 105, 95, 110, 102, 99, 104, 97, 101, 103, 96, 108, 100, 106)
+n_klein <- length(x_klein)
+xbar_klein <- mean(x_klein)
+s_klein <- sd(x_klein)
+se_klein <- s_klein / sqrt(n_klein)
+t_crit_klein <- qt(1 - alpha/2, df = n_klein - 1)
+
+ci_klein <- c(xbar_klein - t_crit_klein * se_klein,
+              xbar_klein + t_crit_klein * se_klein)
+print("Untergrenze: ")
+print(ci_klein[1]) 
+print("Obergrenze: ") 
+print(ci_klein[2])
+```
+
+```{r ki4, echo=FALSE}
+plot(1:2, c(xbar_klein, xbar_gross),
+     xlim = c(0.5, 2.5), ylim = c(98, 105),
+     xaxt = "n", xlab = "", ylab = "Mittelwert ± 95%-KI",
+     pch = 19, cex = 1.5, col = c("red", "blue"),
+     main = "Konfidenzintervalle für den Mittelwert")
+
+axis(1, at = 1:2, labels = c("n = 15 (t-Verteilung)", "n = 200 (z-Verteilung)"))
+
+# Konfidenzintervall Balken
+text("___",x=1, y= ci_klein[1],lwd = 2.5, col = "red")
+text("___",x=1, y= ci_klein[2],lwd = 2.5, col = "red")
+
+text("___",x=2, y= ci_gross[1],lwd = 2.5, col = "blue")
+text("___",x=2, y= ci_gross[2],lwd = 2.5, col = "blue")
+
+
+legend("topright", 
+       legend = c("Mittelwert für n < 30", "Mittelwert für n >= 30"),
+       col = c("red", "blue"), pch = 19, bty = "n")
+```
+
+### Wovon hängt die Breite eines Konfidenzintervalls ab?
+
+*Beispiel*: Für eine Stichprobe von Verspätungszeiten mit dem Mittelwert $\overline{x} = 10$ soll ein zweiseitiges Konfidenzintervall aufgestellt werden.
+
+1. Untersucht die Breite des Konfidenzintervalls, wenn bekannt ist, dass die Standardabweichung der Stichprobe $s = 2$ min, das Konfidenzniveau $95\%$ beträgt und der Umfang der Stichprobe a) $n = 10$ b) $n = 100$ c) $n = 1000$ beträgt.
+
+2. Untersucht die Breite des Konfidenzintervalls, wenn bekannt ist, dass der Umfang der Stichprobe $n = 100$, das Konfidenzniveau $95\%$ beträgt und Standardabweichung der Stichprobe a) $s = 2$ b) $s = 5$ c) $s = 10$ beträgt.
+
+3. Untersucht die Breite des Konfidenzintervalls, wenn bekannt ist, dass der Umfang der Stichprobe $n = 100$, die Standardabweichung $s = 3$ beträgt und das Konfidenzniveau a) $90\%$ b) $95\%$ c) $99\%$ beträgt.
+
+
+```{r ki5, echo=FALSE}
+par(mfrow = c(1, 3), mar = c(5, 5, 4, 1), oma = c(0, 0, 2, 0))
+
+mean_x <- 10
+z975 <- qnorm(0.975)  # 95%
+
+# ========== AUFGABE 1: n-Effekt ==========
+plot(1, mean_x, xlim = c(0.5, 3.5), ylim = c(7, 13),
+     xaxt = "n", xlab = "", ylab = "Verspätungszeit [min]",
+     pch = 19, cex = 1.8, col = "red",
+     main = "1: n-Effekt (s=2, 95%)")
+axis(1, at = 1:3, labels = c("n=10", "n=100", "n=1000"))
+
+se_vals1 <- 2 / sqrt(c(10, 100, 1000))
+halfwidth1 <- z975 * se_vals1
+for(i in 1:3) {
+  arrows(i, mean_x - halfwidth1[i], i, mean_x + halfwidth1[i],
+         col = c("darkred", "blue", "green")[i], lwd = 4,
+         angle = 90, code = 3, length = 0.1)
+}
+legend("topright", legend = sprintf("n=%d, Breite: %.1f min", c(10,100,1000),2*halfwidth1),
+       col = c("darkred", "blue", "green"), lwd = 4, cex = 0.8)
+
+# ========== AUFGABE 2: s-Effekt ==========
+plot(1, mean_x, xlim = c(0.5, 3.5), ylim = c(7, 13),
+     xaxt = "n", xlab = "", ylab = "",
+     pch = 19, cex = 1.8, col = "red",
+     main = "2: s-Effekt (n=100, 95%)")
+axis(1, at = 1:3, labels = c("s=2", "s=5", "s=10"))
+
+se_vals2 <- c(2, 5, 10) / sqrt(100)
+halfwidth2 <- z975 * se_vals2
+for(i in 1:3) {
+  arrows(i, mean_x - halfwidth2[i], i, mean_x + halfwidth2[i],
+         col = c("darkred", "blue", "green")[i], lwd = 4,
+         angle = 90, code = 3, length = 0.1)
+}
+legend("topright", legend = sprintf("s=%d, Breite: %.1f min", c(2,5,10), 2*halfwidth2),
+       col = c("darkred", "blue", "green"), lwd = 4, cex = 0.8)
+
+# ========== AUFGABE 3: alpha-Effekt ==========
+plot(1, mean_x, xlim = c(0.5, 3.5), ylim = c(7, 13),
+     xaxt = "n", xlab = "", ylab = "",
+     pch = 19, cex = 1.8, col = "red",
+     main = "3: α-Effekt (n=100, s=3)")
+axis(1, at = 1:3, labels = c("90%", "95%", "99%"))
+
+alphas <- c(0.10, 0.05, 0.01)
+z_crits <- qnorm(1 - alphas/2)
+se3 <- 3 / sqrt(100)
+halfwidth3 <- z_crits * se3
+for(i in 1:3) {
+  arrows(i, mean_x - halfwidth3[i], i, mean_x + halfwidth3[i],
+         col = c("darkred", "blue", "green")[i], lwd = 4,
+         angle = 90, code = 3, length = 0.1)
+}
+legend("topright", legend = sprintf("%d%%, Breite: %.1f min", c(90,95,99), 2*halfwidth3),
+       col = c("darkred", "blue", "green"), lwd = 4, cex = 0.8)
+```
+
+---
+
+## Hypothesentests
+
+*WICHTIG:* 
+
+- Hypothesentests sind so konstruiert, dass man von der Gültigkeit der Null-Hypothese ausgeht.
+
+- Mit der Testvorschrift wird dann überprüft, ob es eine signifikante Evidenz GEGEN die Nullhypothese gibt.
+
+
+### Vorgehensweise:
+
+- Erstelle die geeignete Hypothesenkonstellation
+
+- Berechne den empirischen Wert des Parameters (z.B. Mittelwert)
+
+- Berechne die kritische Schranke für den Parameter (wichtig ist, ob die Varianz der Grundgesamtheit bekannt ist oder nicht)
+
+- Vergleiche den empirischen Wert mit der kritischen Schranke
+
+- Liegt der empirische Wert im Ablehnungsbereich (von $H_0$), entscheidet man für die $H_1$ Hypothese.
+
+- Liegt der empirische Wert im Annahmebereich (von $H_0$), geht man von der Gültigkeit der $H_0$ Hypothese weiterhin aus.
+
+
+**Aufgabe 1:** Untersucht den Code und beschreibt, welcher Hypothesentest hier durchgeführt wurde.
+
+```{r test1}
+# Daten
+delay <- c(8,12,15,9,11,13,14,7,16,10,12,9,11,13,8,15,10,12,14,9,11,13,10,12,16)
+xbar <- mean(delay)  # 12.1
+s <- sd(delay)       # 2.9
+n <- length(delay)   # 25
+mu0 <- 10
+
+# Teststatistik von Hand
+t_obs <- (xbar - mu0) / (s / sqrt(n))
+t_obs  # 3.45
+
+t_crit <- qt(1 - alpha/2, df = n-1)
+cat("Ablehnungsbereich: t >", round(t_crit, 3), " und t <", -round(t_crit, 3), "\n\n")
+
+# p-Wert von Hand
+2 * pt(-abs(t_obs), df = n-1)  # 0.002
+
+# ODER t.test() implemetiert in R
+t.test(delay, mu = 10)
+```
+
+```{r test2, echo=FALSE}
+x <- seq(-4, 4, 0.01)
+plot(x, dnorm(x), type = "l", lwd = 2, col = "navy",
+     xlab = "t-Wert", ylab = "Dichte",
+     main = "t-Test (Varianz der Grundgesamtheit ist nicht bekannt)")
+
+# Kritische Grenzen ROT
+abline(v = c(-round(t_crit, 3), round(t_crit, 3)), col = "red", lwd = 3, lty = 2)
+text(c(-round(t_crit, 3), round(t_crit, 3)), 0.35, c(-round(t_crit, 3), +round(t_crit, 3)), col = "red", cex = 1.2)
+
+# Empirischer Wert BLAU
+abline(v = t_obs, col = "blue", lwd = 4)
+text(round(t_obs, 3), 0.2, round(t_obs, 3), col = "blue", font = 2, cex = 1.2)
+```
+
+**Aufgabe 2:** Untersucht den Code und beschreibt, welcher Hypothesentest hier durchgeführt wurde.
+
+```{r test3}
+require("BSDA")
+# DATEN: Gefüllte Flaschen (n=40, große Stichprobe)
+fuellmengen <- c(498, 502, 501, 499, 503, 497, 504, 500, 502, 499,
+                 501, 498, 503, 500, 502, 499, 501, 500, 504, 497,
+                 502, 499, 501, 500, 503, 498, 502, 501, 499, 504,
+                 500, 502, 499, 501, 498, 503, 500, 502, 501, 499)
+
+xbar <- mean(fuellmengen)      
+s <- sd(fuellmengen)           
+sigma <- 5                     
+n <- length(fuellmengen)       
+mu0 <- 500                     
+alpha <- 0.05                  
+
+cat("Füllmengen: n =", n, ", mean =", round(xbar, 2), "ml, sigma =", sigma, "ml\n")
+
+z_obs <- (xbar - mu0) / (sigma / sqrt(n))
+
+z_crit <- qnorm(1 - alpha/2)  
+cat("Ablehnungsbereich: z <", -round(z_crit, 3),"und z > ", +round(z_crit, 3), "\n\n")
+
+p_val <- 2 * pnorm(-abs(z_obs))
+
+# ODER Test in R
+
+z_result <- z.test(fuellmengen, mu = 500, sigma.x = 5, conf.level = 0.95)
+z_result
+```
+```{r test4, echo=FALSE}
+x <- seq(-3, 3, 0.01)
+plot(x, dnorm(x), type = "l", lwd = 2, col = "navy",
+     xlab = "z-Wert", ylab = "Dichte",
+     main = "Gauß-Test (Varianz der Grundgesamtheit ist bekannt)")
+
+# Kritische Grenzen ROT
+abline(v = c(-round(z_crit, 3), round(z_crit, 3)), col = "red", lwd = 3, lty = 2)
+text(c(-round(z_crit, 3), round(z_crit, 3)), 0.35, c(-round(z_crit, 3), +round(z_crit, 3)), col = "red", cex = 1.2)
+
+# Empirischer Wert BLAU
+abline(v = z_obs, col = "blue", lwd = 4)
+#points(1.08, dnorm(1.08), pch = 19, cex = 2.5, col = "blue")
+text(round(z_obs, 3), 0.2, round(z_obs, 3), col = "blue", font = 2, cex = 1.2)
+```
+
+## Übungsaufgaben:
+
+1. Probiere die Aufgaben aus der Aufgabensammlung in R zu rechnen
+
+2. Schreibe den Code für die Implementierung eines Testes für Mittelwertdifferenzen.
+
+

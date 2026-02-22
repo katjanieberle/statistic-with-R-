@@ -1,0 +1,221 @@
+---
+title: "R – Erste Schritte"
+author: "Dr. Katja Nieberle"
+date: "2026-03-15"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Was ist R?
+
+R ist eine freie Programmiersprache und Softwareumgebung für statistische Berechnungen und Grafiken.  
+Die aktuelle stabile Version ist R 4.5.2 (Stand Januar 2026).
+
+R entstand 1993 an der University of Auckland (Neuseeland) als Open-Source-Weiterentwicklung der Sprache S (Bell Labs, ab 1976).  
+Ross Ihaka und Robert Gentleman initiierten das Projekt; seit 1995 ist R öffentlich verfügbar.  
+R steht unter der GPL-Lizenz (General Public License) und erlaubt damit die freie Nutzung, Modifikation und Verteilung von Code und Paketen.
+
+R Studio bietet eine komfortable Entwicklungsumgebung für R.
+
+Neben der Desktop-Version (RStudio Desktop, kostenlos, Version 2025.09.\*) gibt es **Posit Cloud** (ehemals RStudio Cloud), eine browserbasierte IDE unter <https://posit.cloud>.  
+Beachte dabei:
+
+- Kostenlose Limits (z.B. Anzahl Projekte, Nutzungsstunden pro Monat)
+- Datenschutz (Daten liegen in der Cloud)
+- Notwendige stabile Internetverbindung
+
+Posit Cloud eignet sich gut für Übungen ohne lokale Installation und für kollaboratives Arbeiten.
+
+---
+
+## CRAN
+
+**CRAN** (Comprehensive R Archive Network) ist ein Netzwerk von Spiegelservern mit:
+
+- R-Installationsdateien
+- Dokumentation
+- Tausenden von R-Paketen (über 20.000)
+
+Pakete erweitern R um zusätzliche Funktionen, Datensätze und Grafiken (z.B. `ggplot2` für Visualisierung) und sind in der Regel ebenfalls Open Source.
+
+---
+
+## POSIT CLOUD
+
+Öffne <https://posit.cloud/> und registriere dich für eine kostenlose Version
+
+```{r p1, echo=FALSE, out.width="50%", fig.align='center', fig.height=2}
+knitr::include_graphics("graphics/posit1.jpg")
+``` 
+![](graphics/posit2.jpg)
+ 
+![](graphics/posit3.jpg)
+
+```{r p4, echo=FALSE, out.width="40%", fig.align='center', fig.height=2}
+knitr::include_graphics("graphics/posit4.jpg")
+``` 
+
+```{r p5, echo=FALSE, out.width="50%", fig.align='center', fig.height=2}
+knitr::include_graphics("graphics/posit5.jpg")
+``` 
+
+\begin{center} Bestätige deine Email Adresse in DEINEM Email Account!  \end{center}
+
+```{r p6, echo=FALSE, out.width="40%", fig.align='center', fig.height=2}
+knitr::include_graphics("graphics/posit6.jpg")
+``` 
+
+```{r p7, echo=FALSE, out.width="40%", fig.align='center', fig.height=2}
+knitr::include_graphics("graphics/posit7_1.jpg")
+``` 
+
+![](graphics/posit7.jpg)
+
+![](graphics/posit8.jpg)
+
+![](graphics/posit9.jpg)
+
+![](graphics/posit10.jpg)
+
+ \begin{center} Erstelle ein R project aus dem GitHub template - nutze die URL \end{center}
+
+ \begin{center} <https://github.com/katjanieberle/r-course-template/>  \end{center}
+
+![](graphics/posit11.jpg)
+
+![](graphics/posit12.jpg)
+
+ \begin{center} Das Endergebnis soll so aussehen:  \end{center}
+
+![](graphics/posit13.jpg)
+
+ \begin{center} Navigiere zum Ordner **scripts** und erstelle deine erste R Datei. \end{center}
+
+![](graphics/posit14.jpg)
+
+![](graphics/posit15.jpg)
+
+
+## RStudio-Oberfläche
+
+RStudio integriert R in eine benutzerfreundliche IDE (Integrated Development Environment) mit vier Hauptbereichen:
+
+- **Source-Pane**: Skripte bearbeiten (`.R`, `.Rmd`) und ausführen (z.B. Strg + Enter).
+- **Console-Pane**: Befehle direkt eingeben und Ergebnisse sofort sehen.
+- **Environment/History-Pane**: Aktuelle Objekte und Befehlsverlauf.
+- **Files/Plots/Packages/Help-Pane**: Dateien, Grafiken, Pakete und Hilfe.
+
+![RStudio Oberfläche mit Beschriftungen](graphics/posit16.jpg)
+
+---
+
+**Wichtig:** Speichere dein Skript regelmäßig mit **Strg + S**.
+
+---
+
+## Gängige Dateiformate für Daten
+
+R kann u.a. folgende Formate lesen und schreiben:
+
+- Text- und Tabellenformate: `.csv`, `.txt`
+- Excel-Dateien: `.xlsx` (über zusätzliche Pakete wie `readxl`)
+- R-eigene Formate: `.rds`, `.RData` / `.rda`
+- Statistik-Formate (über Pakete): SPSS (`.sav`), Stata (`.dta`), etc.
+
+---
+
+## Arbeiten mit Konsole und Skript
+
+- **Console**: Direkte Eingabe, z.B.
+
+```{r console, eval = FALSE}
+2 + 2 
+```
+
+- **Skript**: Führe die einzelnen Rows mit `STRG + ENTER` aus
+
+## Was ist Markdown / R Markdown?
+
+**Markdown** ist eine einfache Auszeichnungssprache für formatierte Texte (Überschriften, Listen, Links, Fettschrift, etc.).  
+**R Markdown** (`.Rmd`-Dateien) erweitert Markdown um eingebetteten R-Code.
+
+In RStudio:
+
+- Menü: `File > New File > R Markdown...`  
+- R Markdown-Dokumente bestehen aus:
+
+  - **YAML-Header** (zwischen `---` am Anfang)
+  - **Text** in Markdown-Syntax
+  - **R-Code-Chunks**:  
+
+    ````
+    ```{r}
+    # R-Code hier
+    ```
+    ````
+---
+
+## Probiere es aus!
+
+1. **Überprüfe die Ordnerstruktur**
+
+2. **Erstelle ein erstes Skript** in RStudio:  
+   `File > New File > R Script`  
+   und füge zum Skript folgende Befehle hinzu:
+
+```{r pr}
+   print("Hallo R!")
+   3 + 4
+```
+
+3. Speichere das Skript (Strg + S) im Projektordner `..\scripts` (z.B. first.R).
+
+4. Schreib in die Datei ein paar Berechnungen wie `7*10` oder `print("coole Sache!")` und führe den Code aus:
+
+- Einzelzeile: `STRG + ENTER`
+
+- Gesamtes Skript: `STRG + SHIFT + S`
+
+- Konsole leeren: `STRG + L`
+
+
+**Tipp:** Speichere **regelmäßig** (Strg + S) und benutze **# Kommentare** für Erklärungen!
+
+## Übungsaufgaben:
+
+1. Erstelle ein R-Skript second.R mit folgendem Inhalt:
+
+```{r f, eval = FALSE}
+# ===== DEIN NAME =====
+print("Mein R-Skript läuft!")
+
+# ===== RECHNEN =====
+2 + 3                    # Addition
+10 / 4                   # Division  
+2^3                      # Potenz
+sqrt(16)                 # Wurzel
+
+# ===== OBJEKTE =====
+name <- "Dein Name"
+alter <- 25
+print(paste("Hallo", name, "- Du bist", alter, "Jahre alt!"))
+
+# ===== VERSUCHE =====
+x <- c(1, 2, 3, 4, 5)
+y <- 1:10
+x * y                    # Vektor-Arithmetik
+
+```
+
+
+2. Erkunde die RStudio-Oberfläche:
+
+- **Console**: Befehle direkt eingeben
+
+- **Source**: Skripte bearbeiten
+
+- **Environment**: Objekte ansehen
+
+- **Plots**: Grafiken erscheinen hier
+
